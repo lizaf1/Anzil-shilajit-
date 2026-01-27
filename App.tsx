@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import Navbar from './components/Navbar';
@@ -163,7 +162,26 @@ const AppContent: React.FC = () => {
 
   const [siteContent, setSiteContent] = useState<EditableContent>(() => {
     const saved = localStorage.getItem('anzil_site_content');
-    return saved ? JSON.parse(saved) : DEFAULT_CONTENT;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        // Deep merge logic to ensure new features don't crash with old data
+        return {
+          ...DEFAULT_CONTENT,
+          ...parsed,
+          hero: { ...DEFAULT_CONTENT.hero, ...parsed.hero },
+          intro: { ...DEFAULT_CONTENT.intro, ...parsed.intro },
+          product: { ...DEFAULT_CONTENT.product, ...parsed.product },
+          benefits: { ...DEFAULT_CONTENT.benefits, ...parsed.benefits },
+          faq: { ...DEFAULT_CONTENT.faq, ...parsed.faq },
+          certs: { ...DEFAULT_CONTENT.certs, ...parsed.certs },
+        };
+      } catch (e) {
+        console.error("Failed to parse site content", e);
+        return DEFAULT_CONTENT;
+      }
+    }
+    return DEFAULT_CONTENT;
   });
 
   useEffect(() => {
