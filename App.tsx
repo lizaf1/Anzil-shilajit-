@@ -11,53 +11,158 @@ import BlogPage from './components/BlogPage';
 import BlogPostPage from './components/BlogPostPage';
 import AdminPanel from './components/AdminPanel';
 import { blogPosts as initialBlogPosts } from './data/blog-posts';
+import { translations } from './translations';
 
-export interface SiteSettings {
-  whatsapp: string;
-  shopee: string;
-  tiktok: string;
-  price: string;
-  heroTitleEn: string;
-  heroTitleId: string;
+// Define the structure for all editable content
+export interface EditableContent {
+  hero: {
+    titleEn: string;
+    titleId: string;
+    titleAccentEn: string;
+    titleAccentId: string;
+    descEn: string;
+    descId: string;
+    image: string;
+  };
+  intro: {
+    titleEn: string;
+    titleId: string;
+    descEn: string;
+    descId: string;
+    image: string;
+    quoteEn: string;
+    quoteId: string;
+  };
+  product: {
+    price: string;
+    titleEn: string;
+    titleId: string;
+    descEn: string;
+    descId: string;
+    image: string;
+    whatsapp: string;
+    shopee: string;
+    tiktok: string;
+  };
+  benefits: {
+    titleEn: string;
+    titleId: string;
+    subtitleEn: string;
+    subtitleId: string;
+    items: Array<{ titleEn: string; titleId: string; descEn: string; descId: string }>;
+  };
+  faq: {
+    titleEn: string;
+    titleId: string;
+    items: Array<{ qEn: string; qId: string; aEn: string; aId: string }>;
+  };
+  certs: {
+    titleEn: string;
+    titleId: string;
+    descEn: string;
+    descId: string;
+    items: Array<{ titleEn: string; titleId: string; descEn: string; descId: string; idNum: string; image: string }>;
+  };
 }
 
-const DEFAULT_SETTINGS: SiteSettings = {
-  whatsapp: '6281234567890',
-  shopee: 'https://shopee.co.id/anzil_official',
-  tiktok: 'https://www.tiktok.com/@anzil_wellness',
-  price: '49.99',
-  heroTitleEn: 'The Gold of the',
-  heroTitleId: 'Emas dari'
+const DEFAULT_CONTENT: EditableContent = {
+  hero: {
+    titleEn: translations.en.hero.title,
+    titleId: translations.id.hero.title,
+    titleAccentEn: translations.en.hero.titleAccent,
+    titleAccentId: translations.id.hero.titleAccent,
+    descEn: translations.en.hero.desc,
+    descId: translations.id.hero.desc,
+    image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=2000",
+  },
+  intro: {
+    titleEn: translations.en.intro.title,
+    titleId: translations.id.intro.title,
+    descEn: translations.en.intro.desc,
+    descId: translations.id.intro.desc,
+    image: "https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?auto=format&fit=crop&q=80&w=1000",
+    quoteEn: translations.en.intro.quote,
+    quoteId: translations.id.intro.quote,
+  },
+  product: {
+    price: "49.99",
+    titleEn: translations.en.product.sectionTitle,
+    titleId: translations.id.product.sectionTitle,
+    descEn: translations.en.product.desc,
+    descId: translations.id.product.desc,
+    image: "https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?auto=format&fit=crop&q=80&w=1000",
+    whatsapp: "6281234567890",
+    shopee: "https://shopee.co.id/anzil_official",
+    tiktok: "https://www.tiktok.com/@anzil_wellness",
+  },
+  benefits: {
+    titleEn: translations.en.benefits.title,
+    titleId: translations.id.benefits.title,
+    subtitleEn: translations.en.benefits.subtitle,
+    subtitleId: translations.id.benefits.subtitle,
+    items: translations.en.benefits.items.map((item: any, i: number) => ({
+      titleEn: item.title,
+      titleId: translations.id.benefits.items[i].title,
+      descEn: item.desc,
+      descId: translations.id.benefits.items[i].desc,
+    })),
+  },
+  faq: {
+    titleEn: translations.en.faq.title,
+    titleId: translations.id.faq.title,
+    items: translations.en.faq.items.map((item: any, i: number) => ({
+      qEn: item.q,
+      qId: translations.id.faq.items[i].q,
+      aEn: item.a,
+      aId: translations.id.faq.items[i].a,
+    })),
+  },
+  certs: {
+    titleEn: translations.en.certs.title,
+    titleId: translations.id.certs.title,
+    descEn: translations.en.certs.desc,
+    descId: translations.id.certs.desc,
+    items: translations.en.certs.items.map((item: any, i: number) => ({
+      titleEn: item.title,
+      titleId: translations.id.certs.items[i].title,
+      descEn: item.desc,
+      descId: translations.id.certs.items[i].desc,
+      idNum: ["MD 867011001541", "Batch #ANZ-2024-08", "FSMS #99210", "Good Manufacturing Practice"][i],
+      image: [
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Logo_BPOM.svg/1200px-Logo_BPOM.svg.png",
+        "https://cdn-icons-png.flaticon.com/512/3209/3209065.png",
+        "https://cdn-icons-png.flaticon.com/512/3501/3501198.png",
+        "https://cdn-icons-png.flaticon.com/512/2855/2855523.png"
+      ][i],
+    })),
+  },
 };
 
 type Page = 'home' | 'certificates' | 'blog' | 'blog-post' | 'admin';
 
 const AppContent: React.FC = () => {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
-  
-  // Persistence for Blog Posts
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+
   const [blogPosts, setBlogPosts] = useState(() => {
     const saved = localStorage.getItem('anzil_blog_posts');
     return saved ? JSON.parse(saved) : initialBlogPosts;
   });
 
-  // Persistence for Site Settings
-  const [siteSettings, setSiteSettings] = useState<SiteSettings>(() => {
-    const saved = localStorage.getItem('anzil_site_settings');
-    return saved ? JSON.parse(saved) : DEFAULT_SETTINGS;
+  const [siteContent, setSiteContent] = useState<EditableContent>(() => {
+    const saved = localStorage.getItem('anzil_site_content');
+    return saved ? JSON.parse(saved) : DEFAULT_CONTENT;
   });
-
-  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('anzil_blog_posts', JSON.stringify(blogPosts));
   }, [blogPosts]);
 
   useEffect(() => {
-    localStorage.setItem('anzil_site_settings', JSON.stringify(siteSettings));
-  }, [siteSettings]);
+    localStorage.setItem('anzil_site_content', JSON.stringify(siteContent));
+  }, [siteContent]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -65,14 +170,7 @@ const AppContent: React.FC = () => {
 
   const navigateTo = (page: Page) => {
     setCurrentPage(page);
-    if (page !== 'blog-post') {
-      setSelectedPostId(null);
-    }
-  };
-
-  const handlePostSelect = (postId: string) => {
-    setSelectedPostId(postId);
-    setCurrentPage('blog-post');
+    if (page !== 'blog-post') setSelectedPostId(null);
   };
 
   const selectedPost = selectedPostId ? blogPosts.find((p: any) => p.id === selectedPostId) : null;
@@ -83,8 +181,8 @@ const AppContent: React.FC = () => {
         onExit={() => navigateTo('home')} 
         blogPosts={blogPosts} 
         setBlogPosts={setBlogPosts}
-        siteSettings={siteSettings}
-        setSiteSettings={setSiteSettings}
+        siteContent={siteContent}
+        setSiteContent={setSiteContent}
         isAuthenticated={isAdminAuthenticated}
         setAuthenticated={setIsAdminAuthenticated}
       />
@@ -97,7 +195,7 @@ const AppContent: React.FC = () => {
       
       {currentPage === 'home' && (
         <main>
-          <Hero customTitleEn={siteSettings.heroTitleEn} customTitleId={siteSettings.heroTitleId} />
+          <Hero content={siteContent.hero} />
           
           <section className="py-24 bg-white">
             <div className="container mx-auto px-6">
@@ -105,20 +203,22 @@ const AppContent: React.FC = () => {
                 <div className="md:w-1/2">
                   <div className="relative group">
                     <img 
-                      src="https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?auto=format&fit=crop&q=80&w=1000" 
+                      src={siteContent.intro.image} 
                       alt="Artisanal Himalayan Sourcing" 
-                      className="rounded-[3rem] shadow-2xl transition-transform duration-700 group-hover:scale-[1.02]"
+                      className="rounded-[3rem] shadow-2xl transition-transform duration-700 group-hover:scale-[1.02] w-full aspect-square object-cover"
                     />
-                    <div className="absolute -bottom-6 -right-6 bg-gold-accent p-8 rounded-3xl shadow-xl hidden lg:block">
-                      <p className="text-white font-bold text-xl serif">"{t.intro.quote}"</p>
+                    <div className="absolute -bottom-6 -right-6 bg-gold-accent p-8 rounded-3xl shadow-xl hidden lg:block max-w-xs">
+                      <p className="text-white font-bold text-xl serif">"{language === 'en' ? siteContent.intro.quoteEn : siteContent.intro.quoteId}"</p>
                     </div>
                   </div>
                 </div>
                 <div className="md:w-1/2">
                   <span className="text-gold-accent font-bold uppercase tracking-widest text-xs mb-4 block">{t.intro.tag}</span>
-                  <h2 className="text-4xl md:text-5xl font-bold text-shilajit-brown mb-6 serif">{t.intro.title}</h2>
+                  <h2 className="text-4xl md:text-5xl font-bold text-shilajit-brown mb-6 serif">
+                    {language === 'en' ? siteContent.intro.titleEn : siteContent.intro.titleId}
+                  </h2>
                   <p className="text-stone-600 text-lg leading-relaxed mb-8">
-                    {t.intro.desc}
+                    {language === 'en' ? siteContent.intro.descEn : siteContent.intro.descId}
                   </p>
                   <div className="grid grid-cols-2 gap-8 border-t border-stone-100 pt-8">
                     <div>
@@ -135,20 +235,24 @@ const AppContent: React.FC = () => {
             </div>
           </section>
 
-          <Benefits />
-          <ProductFeature settings={siteSettings} />
+          <Benefits content={siteContent.benefits} />
+          <ProductFeature content={siteContent.product} />
 
           <section id="faq" className="py-24 bg-white">
             <div className="container mx-auto px-6">
-              <h2 className="text-4xl font-bold text-center text-shilajit-brown mb-16 serif">{t.faq.title}</h2>
+              <h2 className="text-4xl font-bold text-center text-shilajit-brown mb-16 serif">
+                {language === 'en' ? siteContent.faq.titleEn : siteContent.faq.titleId}
+              </h2>
               <div className="max-w-3xl mx-auto space-y-4">
-                {t.faq.items.map((faq: any, i: number) => (
+                {siteContent.faq.items.map((faq, i) => (
                   <details key={i} className="group p-6 rounded-2xl border border-stone-100 hover:border-stone-200 transition-all">
                     <summary className="list-none flex justify-between items-center cursor-pointer font-bold text-lg text-shilajit-brown serif">
-                      {faq.q}
+                      {language === 'en' ? faq.qEn : faq.qId}
                       <span className="text-gold-accent group-open:rotate-45 transition-transform duration-300 text-2xl">+</span>
                     </summary>
-                    <p className="mt-4 text-stone-500 leading-relaxed text-sm">{faq.a}</p>
+                    <p className="mt-4 text-stone-500 leading-relaxed text-sm">
+                      {language === 'en' ? faq.aEn : faq.aId}
+                    </p>
                   </details>
                 ))}
               </div>
@@ -158,24 +262,18 @@ const AppContent: React.FC = () => {
       )}
 
       {currentPage === 'certificates' && (
-        <CertificatesPage onBack={() => navigateTo('home')} />
+        <CertificatesPage onBack={() => navigateTo('home')} content={siteContent.certs} />
       )}
 
       {currentPage === 'blog' && (
-        <BlogPage onPostSelect={handlePostSelect} posts={blogPosts} />
+        <BlogPage onPostSelect={(id) => { setSelectedPostId(id); setCurrentPage('blog-post'); }} posts={blogPosts} />
       )}
 
       {currentPage === 'blog-post' && selectedPost && (
         <BlogPostPage post={selectedPost} onBack={() => navigateTo('blog')} />
       )}
 
-      <Footer settings={siteSettings} onAdminClick={() => navigateTo('admin')} />
-      
-      <div className="md:hidden fixed bottom-6 left-6 right-6 z-50">
-        <a href="#shop" className="bg-shilajit-brown text-white w-full py-4 rounded-full text-center font-bold shadow-2xl block border border-white/10 backdrop-blur-sm">
-          {t.product.name}
-        </a>
-      </div>
+      <Footer content={siteContent.product} onAdminClick={() => navigateTo('admin')} />
     </div>
   );
 };

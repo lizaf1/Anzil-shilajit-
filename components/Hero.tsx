@@ -3,20 +3,29 @@ import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
 
 interface HeroProps {
-  customTitleEn?: string;
-  customTitleId?: string;
+  content: {
+    titleEn: string;
+    titleId: string;
+    titleAccentEn: string;
+    titleAccentId: string;
+    descEn: string;
+    descId: string;
+    image: string;
+  };
 }
 
-const Hero: React.FC<HeroProps> = ({ customTitleEn, customTitleId }) => {
+const Hero: React.FC<HeroProps> = ({ content }) => {
   const { language, t } = useLanguage();
 
-  const displayPrefix = language === 'en' ? (customTitleEn || t.hero.title) : (customTitleId || t.hero.title);
+  const title = language === 'en' ? content.titleEn : content.titleId;
+  const titleAccent = language === 'en' ? content.titleAccentEn : content.titleAccentId;
+  const desc = language === 'en' ? content.descEn : content.descId;
 
   return (
     <section className="relative h-screen flex items-center overflow-hidden">
       <div className="absolute inset-0 z-0">
         <img 
-          src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=2000" 
+          src={content.image} 
           alt="Himalayan Mountains" 
           className="w-full h-full object-cover"
         />
@@ -29,11 +38,11 @@ const Hero: React.FC<HeroProps> = ({ customTitleEn, customTitleId }) => {
             {t.hero.subtitle}
           </span>
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight serif">
-            {displayPrefix} <br />
-            <span className="text-gold-accent">{t.hero.titleAccent}</span>
+            {title} <br />
+            <span className="text-gold-accent">{titleAccent}</span>
           </h1>
           <p className="text-xl md:text-2xl mb-8 text-stone-200 leading-relaxed font-light">
-            {t.hero.desc}
+            {desc}
           </p>
           <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
             <a href="#shop" className="bg-gold-accent text-white px-10 py-4 rounded-full text-lg font-semibold hover:bg-opacity-90 transition-all text-center shadow-lg">
