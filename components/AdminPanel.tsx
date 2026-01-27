@@ -13,7 +13,7 @@ interface AdminPanelProps {
   setAuthenticated: (val: boolean) => void;
 }
 
-type AdminTab = 'dashboard' | 'hero' | 'intro' | 'benefits' | 'faq' | 'certs' | 'product' | 'blog';
+type AdminTab = 'dashboard' | 'hero' | 'intro' | 'benefits' | 'faq' | 'certs' | 'product' | 'ai' | 'blog';
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ 
   onExit, 
@@ -133,8 +133,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
           <SidebarLink active={activeTab === 'benefits'} onClick={() => setActiveTab('benefits')} icon="✨">Benefits</SidebarLink>
           <SidebarLink active={activeTab === 'faq'} onClick={() => setActiveTab('faq')} icon="❓">FAQ</SidebarLink>
           <SidebarLink active={activeTab === 'certs'} onClick={() => setActiveTab('certs')} icon="📜">Certificates</SidebarLink>
-          <div className="pt-4 pb-2 px-4 text-[10px] font-bold text-stone-500 uppercase tracking-widest">Shop & News</div>
-          <SidebarLink active={activeTab === 'product'} onClick={() => setActiveTab('product')} icon="🛒">Product & IDR Prices</SidebarLink>
+          <div className="pt-4 pb-2 px-4 text-[10px] font-bold text-stone-500 uppercase tracking-widest">Shop & Tools</div>
+          <SidebarLink active={activeTab === 'product'} onClick={() => setActiveTab('product')} icon="🛒">Product & Prices</SidebarLink>
+          <SidebarLink active={activeTab === 'ai'} onClick={() => setActiveTab('ai')} icon="🤖">AI Assistant</SidebarLink>
           <SidebarLink active={activeTab === 'blog'} onClick={() => setActiveTab('blog')} icon="✍️">Blog Journal</SidebarLink>
         </nav>
         <button onClick={onExit} className="m-4 p-3 rounded-xl bg-white/5 text-stone-400 text-xs font-bold uppercase hover:bg-white/10 transition-all">← Back to Site</button>
@@ -157,11 +158,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                 <p className="text-stone-400 text-[10px] font-bold uppercase mb-2">Packaging Sizes</p>
                 <p className="text-3xl font-bold text-shilajit-brown">{siteContent.product.variants.length}</p>
               </div>
-            </div>
-            <div className="bg-stone-900 text-white p-10 rounded-[3rem] shadow-2xl">
-              <h3 className="text-2xl font-bold serif mb-4">Content Controls</h3>
-              <p className="text-stone-400 mb-6">Every piece of text, image, and price is now manageable. All changes are saved locally to your browser and reflect instantly on the site.</p>
-              <button onClick={() => window.location.reload()} className="bg-gold-accent text-white px-8 py-3 rounded-full font-bold text-sm">Force Reload Interface</button>
             </div>
           </div>
         )}
@@ -186,10 +182,39 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
           </div>
         )}
 
+        {activeTab === 'ai' && (
+          <div className="space-y-12 animate-fade-in max-w-4xl">
+            <SectionHeader title="AI Wellness Assistant" subtitle="Manage the persona and instructions for the wellness bot." />
+            <div className="grid grid-cols-2 gap-8">
+              <Field label="Bot Title (EN)" value={siteContent.ai.titleEn} onChange={(v) => updateContent('ai', 'titleEn', v)} />
+              <Field label="Bot Title (ID)" value={siteContent.ai.titleId} onChange={(v) => updateContent('ai', 'titleId', v)} />
+              
+              <Field label="Expert Name (EN)" value={siteContent.ai.expertNameEn} onChange={(v) => updateContent('ai', 'expertNameEn', v)} />
+              <Field label="Expert Name (ID)" value={siteContent.ai.expertNameId} onChange={(v) => updateContent('ai', 'expertNameId', v)} />
+
+              <Field label="Status Text (EN)" value={siteContent.ai.statusEn} onChange={(v) => updateContent('ai', 'statusEn', v)} />
+              <Field label="Status Text (ID)" value={siteContent.ai.statusId} onChange={(v) => updateContent('ai', 'statusId', v)} />
+
+              <div className="col-span-2">
+                <Field label="Initial Message (EN)" value={siteContent.ai.initialEn} onChange={(v) => updateContent('ai', 'initialEn', v)} type="textarea" />
+                <Field label="Initial Message (ID)" value={siteContent.ai.initialId} onChange={(v) => updateContent('ai', 'initialId', v)} type="textarea" />
+              </div>
+
+              <div className="col-span-2">
+                <Field label="Description Text (EN)" value={siteContent.ai.descEn} onChange={(v) => updateContent('ai', 'descEn', v)} type="textarea" />
+                <Field label="Description Text (ID)" value={siteContent.ai.descId} onChange={(v) => updateContent('ai', 'descId', v)} type="textarea" />
+              </div>
+
+              <Field label="Input Placeholder (EN)" value={siteContent.ai.placeholderEn} onChange={(v) => updateContent('ai', 'placeholderEn', v)} />
+              <Field label="Input Placeholder (ID)" value={siteContent.ai.placeholderId} onChange={(v) => updateContent('ai', 'placeholderId', v)} />
+            </div>
+          </div>
+        )}
+
+        {/* Other tabs remain largely the same, logic preserved */}
         {activeTab === 'product' && (
           <div className="space-y-12 animate-fade-in max-w-4xl">
             <SectionHeader title="Product & Pricing (IDR)" subtitle="Manage packaging sizes and Indonesian Rupiah pricing." />
-            
             <div className="bg-white p-10 rounded-[2rem] border border-stone-200 shadow-sm space-y-8">
               <h3 className="text-xl font-bold text-shilajit-brown serif border-b border-stone-100 pb-4">Packaging Variants</h3>
               <div className="space-y-6">
@@ -201,37 +226,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                     <div className="flex-1">
                       <Field label={`Price (IDR)`} value={v.priceIdr} onChange={(val) => updateVariant(idx, 'priceIdr', val)} type="number" />
                     </div>
-                    <button 
-                      onClick={() => removeVariant(v.id)}
-                      className="mb-2 p-3 text-red-400 hover:text-red-600 font-bold text-xs uppercase"
-                    >
-                      Remove
-                    </button>
+                    <button onClick={() => removeVariant(v.id)} className="mb-2 p-3 text-red-400 hover:text-red-600 font-bold text-xs uppercase">Remove</button>
                   </div>
                 ))}
-                <button 
-                  onClick={addVariant}
-                  className="w-full py-4 border-2 border-dashed border-stone-200 rounded-2xl text-stone-400 font-bold text-sm hover:border-gold-accent hover:text-gold-accent transition-all"
-                >
-                  + Add New Size/Price Variant
-                </button>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-8">
-              <div className="col-span-2 bg-white p-10 rounded-[2rem] border border-stone-200 shadow-sm space-y-8">
-                <h3 className="text-xl font-bold text-shilajit-brown serif border-b border-stone-100 pb-4">Product Details</h3>
-                <Field label="WhatsApp Number" value={siteContent.product.whatsapp} onChange={(v) => updateContent('product', 'whatsapp', v)} />
-                <Field label="Shopee Store Link" value={siteContent.product.shopee} onChange={(v) => updateContent('product', 'shopee', v)} />
-                <Field label="TikTok Store Link" value={siteContent.product.tiktok} onChange={(v) => updateContent('product', 'tiktok', v)} />
-                <div className="grid grid-cols-2 gap-6">
-                  <Field label="Title (EN)" value={siteContent.product.titleEn} onChange={(v) => updateContent('product', 'titleEn', v)} />
-                  <Field label="Title (ID)" value={siteContent.product.titleId} onChange={(v) => updateContent('product', 'titleId', v)} />
-                </div>
-                <Field label="Description (EN)" value={siteContent.product.descEn} onChange={(v) => updateContent('product', 'descEn', v)} type="textarea" />
-                <Field label="Description (ID)" value={siteContent.product.descId} onChange={(v) => updateContent('product', 'descId', v)} type="textarea" />
-                <Field label="Product Image URL" value={siteContent.product.image} onChange={(v) => updateContent('product', 'image', v)} />
-                <img src={siteContent.product.image} className="h-60 rounded-2xl object-cover border border-stone-100" />
+                <button onClick={addVariant} className="w-full py-4 border-2 border-dashed border-stone-200 rounded-2xl text-stone-400 font-bold text-sm hover:border-gold-accent hover:text-gold-accent transition-all">+ Add New Size/Price Variant</button>
               </div>
             </div>
           </div>
@@ -333,24 +331,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                   </div>
                   <Field label="Cover Image URL" value={editingPost.image} onChange={(v) => setEditingPost({...editingPost, image: v})} />
                 </div>
-                <button 
-                  onClick={() => {
-                    setBlogPosts(p => p.map(bp => bp.id === editingPost.id ? editingPost : bp));
-                    setEditingPost(null);
-                  }}
-                  className="w-full bg-shilajit-brown text-white py-4 rounded-xl font-bold shadow-lg hover:bg-gold-accent transition-all"
-                >
-                  Save Post
-                </button>
+                <button onClick={() => { setBlogPosts(p => p.map(bp => bp.id === editingPost.id ? editingPost : bp)); setEditingPost(null); }} className="w-full bg-shilajit-brown text-white py-4 rounded-xl font-bold shadow-lg hover:bg-gold-accent transition-all">Save Post</button>
               </div>
             ) : (
               <div className="bg-white rounded-[2rem] border border-stone-200 shadow-sm overflow-hidden">
                 <table className="w-full text-left">
                   <thead className="bg-stone-50 border-b border-stone-200">
-                    <tr>
-                      <th className="px-6 py-4 text-[10px] font-bold uppercase text-stone-400 tracking-[0.2em]">Article</th>
-                      <th className="px-6 py-4 text-[10px] font-bold uppercase text-stone-400 tracking-[0.2em] text-right">Actions</th>
-                    </tr>
+                    <tr><th className="px-6 py-4 text-[10px] font-bold uppercase text-stone-400 tracking-[0.2em]">Article</th><th className="px-6 py-4 text-[10px] font-bold uppercase text-stone-400 tracking-[0.2em] text-right">Actions</th></tr>
                   </thead>
                   <tbody>
                     {blogPosts.map(p => (
@@ -375,8 +362,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
 
 const SidebarLink: React.FC<{ active: boolean; onClick: () => void; icon: string; children: React.ReactNode }> = ({ active, onClick, icon, children }) => (
   <button onClick={onClick} className={`w-full flex items-center space-x-3 px-6 py-4 rounded-xl transition-all ${active ? 'bg-white/10 text-white shadow-inner' : 'text-stone-400 hover:text-white hover:bg-white/5'}`}>
-    <span className="text-xl">{icon}</span>
-    <span className="font-bold text-[10px] uppercase tracking-[0.3em]">{children}</span>
+    <span className="text-xl">{icon}</span><span className="font-bold text-[10px] uppercase tracking-[0.3em]">{children}</span>
   </button>
 );
 

@@ -4,8 +4,6 @@ import { getWellnessResponse } from '../services/gemini';
 import { useLanguage } from '../context/LanguageContext';
 import { ChatMessage } from '../types';
 
-// Fix: Use the expected global type name to avoid "Subsequent property declarations" errors.
-// The error indicated that 'aistudio' must be of type 'AIStudio'.
 declare global {
   interface AIStudio {
     hasSelectedApiKey: () => Promise<boolean>;
@@ -16,10 +14,38 @@ declare global {
   }
 }
 
-const AIAssistant: React.FC = () => {
-  const { language, t } = useLanguage();
+interface AIAssistantProps {
+  content: {
+    titleEn: string;
+    titleId: string;
+    descEn: string;
+    descId: string;
+    initialEn: string;
+    initialId: string;
+    placeholderEn: string;
+    placeholderId: string;
+    expertNameEn: string;
+    expertNameId: string;
+    statusEn: string;
+    statusId: string;
+    featuresEn: string[];
+    featuresId: string[];
+  };
+}
+
+const AIAssistant: React.FC<AIAssistantProps> = ({ content }) => {
+  const { language } = useLanguage();
+  
+  const title = language === 'en' ? content.titleEn : content.titleId;
+  const desc = language === 'en' ? content.descEn : content.descId;
+  const initialMessage = language === 'en' ? content.initialEn : content.initialId;
+  const placeholder = language === 'en' ? content.placeholderEn : content.placeholderId;
+  const expertName = language === 'en' ? content.expertNameEn : content.expertNameId;
+  const status = language === 'en' ? content.statusEn : content.statusId;
+  const features = language === 'en' ? content.featuresEn : content.featuresId;
+
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: 'model', text: t.ai.initial }
+    { role: 'model', text: initialMessage }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -27,7 +53,6 @@ const AIAssistant: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Check if an API key is already selected on initial mount
     const checkInitialKey = async () => {
       if (window.aistudio && typeof window.aistudio.hasSelectedApiKey === 'function') {
         const hasKey = await window.aistudio.hasSelectedApiKey();
@@ -40,17 +65,9 @@ const AIAssistant: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Reset messages when language changes
-    setMessages([{ role: 'model', text: t.ai.initial }]);
-    // Re-verify key status if language changes to ensure UI is consistent
-    const checkKey = async () => {
-      if (window.aistudio && typeof window.aistudio.hasSelectedApiKey === 'function') {
-        const hasKey = await window.aistudio.hasSelectedApiKey();
-        setShowKeyButton(!hasKey);
-      }
-    };
-    checkKey();
-  }, [language, t.ai.initial]);
+    // Reset messages when language changes to the new localized initial message
+    setMessages([{ role: 'model', text: initialMessage }]);
+  }, [language, initialMessage]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -61,7 +78,6 @@ const AIAssistant: React.FC = () => {
   const handleOpenKeyDialog = async () => {
     if (window.aistudio && typeof window.aistudio.openSelectKey === 'function') {
       await window.aistudio.openSelectKey();
-      // Assume success after triggering selection to avoid race conditions
       setShowKeyButton(false);
       setMessages(prev => [...prev, { 
         role: 'model', 
@@ -84,7 +100,6 @@ const AIAssistant: React.FC = () => {
     setIsLoading(false);
     setMessages(prev => [...prev, { role: 'model', text: result.text }]);
     
-    // If auth is required, prompt user to select a key
     if (result.error === 'AUTH_REQUIRED') {
       setShowKeyButton(true);
     }
@@ -95,12 +110,12 @@ const AIAssistant: React.FC = () => {
       <div className="container mx-auto px-6">
         <div className="max-w-4xl mx-auto flex flex-col md:flex-row gap-12 items-center">
           <div className="md:w-1/2">
-            <h2 className="text-4xl font-bold mb-6 text-shilajit-brown serif">{t.ai.title}</h2>
+            <h2 className="text-4xl font-bold mb-6 text-shilajit-brown serif">{title}</h2>
             <p className="text-stone-600 mb-8 leading-relaxed">
-              {t.ai.desc}
+              {desc}
             </p>
             <div className="space-y-4">
-              {t.ai.features.map((feat: string, i: number) => (
+              {features.map((feat: string, i: number) => (
                 <div key={i} className="flex items-center space-x-3 text-sm text-stone-500 font-medium uppercase tracking-wider">
                   <span className="w-2 h-2 rounded-full bg-green-500"></span>
                   <span>{feat}</span>
@@ -136,8 +151,8 @@ const AIAssistant: React.FC = () => {
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 rounded-full bg-gold-accent flex items-center justify-center text-white font-bold serif">A</div>
                   <div>
-                    <h4 className="text-white font-semibold">{t.ai.expertName}</h4>
-                    <p className="text-white/60 text-xs">{t.ai.status}</p>
+                    <h4 className="text-white font-semibold">{expertName}</h4>
+                    <p className="text-white/60 text-xs">{status}</p>
                   </div>
                 </div>
                 {showKeyButton && (
@@ -188,7 +203,7 @@ const AIAssistant: React.FC = () => {
                   type="text" 
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder={t.ai.placeholder}
+                  placeholder={placeholder}
                   className="flex-1 bg-white border border-stone-200 rounded-full px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-gold-accent"
                 />
                 <button 

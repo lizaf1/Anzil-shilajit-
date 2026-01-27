@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import Navbar from './components/Navbar';
@@ -67,6 +68,22 @@ export interface EditableContent {
     descEn: string;
     descId: string;
     items: Array<{ titleEn: string; titleId: string; descEn: string; descId: string; idNum: string; image: string }>;
+  };
+  ai: {
+    titleEn: string;
+    titleId: string;
+    descEn: string;
+    descId: string;
+    initialEn: string;
+    initialId: string;
+    placeholderEn: string;
+    placeholderId: string;
+    expertNameEn: string;
+    expertNameId: string;
+    statusEn: string;
+    statusId: string;
+    featuresEn: string[];
+    featuresId: string[];
   };
 }
 
@@ -145,6 +162,22 @@ const DEFAULT_CONTENT: EditableContent = {
       ][i] || "https://placehold.co/100",
     })),
   },
+  ai: {
+    titleEn: translations.en.ai.title,
+    titleId: translations.id.ai.title,
+    descEn: translations.en.ai.desc,
+    descId: translations.id.ai.desc,
+    initialEn: translations.en.ai.initial,
+    initialId: translations.id.ai.initial,
+    placeholderEn: translations.en.ai.placeholder,
+    placeholderId: translations.id.ai.placeholder,
+    expertNameEn: translations.en.ai.expertName,
+    expertNameId: translations.id.ai.expertName,
+    statusEn: translations.en.ai.status,
+    statusId: translations.id.ai.status,
+    featuresEn: translations.en.ai.features,
+    featuresId: translations.id.ai.features,
+  }
 };
 
 type Page = 'home' | 'certificates' | 'blog' | 'blog-post' | 'admin';
@@ -165,7 +198,7 @@ const AppContent: React.FC = () => {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // Deep merge logic to ensure new features don't crash with old data
+        // Deep merge logic with fallback to DEFAULT_CONTENT for new fields
         return {
           ...DEFAULT_CONTENT,
           ...parsed,
@@ -175,6 +208,7 @@ const AppContent: React.FC = () => {
           benefits: { ...DEFAULT_CONTENT.benefits, ...parsed.benefits },
           faq: { ...DEFAULT_CONTENT.faq, ...parsed.faq },
           certs: { ...DEFAULT_CONTENT.certs, ...parsed.certs },
+          ai: { ...DEFAULT_CONTENT.ai, ...parsed.ai },
         };
       } catch (e) {
         console.error("Failed to parse site content", e);
@@ -266,7 +300,7 @@ const AppContent: React.FC = () => {
           <Benefits content={siteContent.benefits} />
           <ProductFeature content={siteContent.product} />
           
-          <AIAssistant />
+          <AIAssistant content={siteContent.ai} />
 
           <section id="faq" className="py-24 bg-white">
             <div className="container mx-auto px-6">
