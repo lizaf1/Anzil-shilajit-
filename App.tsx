@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import Navbar from './components/Navbar';
@@ -16,6 +17,8 @@ export interface ProductVariant {
   id: string;
   size: string;
   priceIdr: number;
+  shopeeLink?: string;
+  tiktokLink?: string;
 }
 
 export interface EditableContent {
@@ -44,8 +47,6 @@ export interface EditableContent {
     descId: string;
     image: string;
     whatsapp: string;
-    shopee: string;
-    tiktok: string;
     variants: ProductVariant[];
   };
   benefits: {
@@ -66,6 +67,9 @@ export interface EditableContent {
     descEn: string;
     descId: string;
     items: Array<{ titleEn: string; titleId: string; descEn: string; descId: string; idNum: string; image: string }>;
+  };
+  settings: {
+    adminPassword: string;
   };
 }
 
@@ -95,12 +99,10 @@ const DEFAULT_CONTENT: EditableContent = {
     descId: translations.id.product.desc,
     image: "https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?auto=format&fit=crop&q=80&w=1000",
     whatsapp: "6281234567890",
-    shopee: "https://shopee.co.id/anzil_official",
-    tiktok: "https://www.tiktok.com/@anzil_wellness",
     variants: [
-      { id: '1', size: '15 Grams', priceIdr: 250000 },
-      { id: '2', size: '30 Grams', priceIdr: 450000 },
-      { id: '3', size: '50 Grams', priceIdr: 700000 },
+      { id: '1', size: '15 Grams', priceIdr: 250000, shopeeLink: 'https://shopee.co.id/product/anzil/15g', tiktokLink: 'https://tiktok.com/shop/anzil/15g' },
+      { id: '2', size: '30 Grams', priceIdr: 450000, shopeeLink: 'https://shopee.co.id/product/anzil/30g', tiktokLink: 'https://tiktok.com/shop/anzil/30g' },
+      { id: '3', size: '50 Grams', priceIdr: 700000, shopeeLink: 'https://shopee.co.id/product/anzil/50g', tiktokLink: 'https://tiktok.com/shop/anzil/50g' },
     ],
   },
   benefits: {
@@ -143,6 +145,9 @@ const DEFAULT_CONTENT: EditableContent = {
         "https://cdn-icons-png.flaticon.com/512/2855/2855523.png"
       ][i] || "https://placehold.co/100",
     })),
+  },
+  settings: {
+    adminPassword: "admin123"
   }
 };
 
@@ -173,6 +178,7 @@ const AppContent: React.FC = () => {
           benefits: { ...DEFAULT_CONTENT.benefits, ...parsed.benefits },
           faq: { ...DEFAULT_CONTENT.faq, ...parsed.faq },
           certs: { ...DEFAULT_CONTENT.certs, ...parsed.certs },
+          settings: { ...DEFAULT_CONTENT.settings, ...parsed.settings },
         };
       } catch (e) {
         console.error("Failed to parse site content", e);
@@ -299,7 +305,7 @@ const AppContent: React.FC = () => {
         <BlogPostPage post={selectedPost} onBack={() => navigateTo('blog')} />
       )}
 
-      <Footer content={siteContent.product} onAdminClick={() => navigateTo('admin')} />
+      <Footer content={{ whatsapp: siteContent.product.whatsapp }} onAdminClick={() => navigateTo('admin')} />
     </div>
   );
 };

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { BlogPost } from '../types';
 import { EditableContent, ProductVariant } from '../App';
@@ -12,7 +13,7 @@ interface AdminPanelProps {
   setAuthenticated: (val: boolean) => void;
 }
 
-type AdminTab = 'dashboard' | 'hero' | 'intro' | 'benefits' | 'faq' | 'certs' | 'product' | 'blog';
+type AdminTab = 'dashboard' | 'hero' | 'intro' | 'benefits' | 'faq' | 'certs' | 'product' | 'blog' | 'settings';
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ 
   onExit, 
@@ -24,13 +25,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
   setAuthenticated 
 }) => {
   const [activeTab, setActiveTab] = useState<AdminTab>('dashboard');
-  const [password, setPassword] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === 'admin123') setAuthenticated(true);
-    else alert('Invalid credentials');
+    if (passwordInput === siteContent.settings.adminPassword) {
+      setAuthenticated(true);
+    } else {
+      alert('Invalid credentials');
+    }
   };
 
   const updateContent = (section: keyof EditableContent, field: string, value: any) => {
@@ -57,7 +61,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
   };
 
   const addVariant = () => {
-    const newVariants = [...siteContent.product.variants, { id: Date.now().toString(), size: 'New Size', priceIdr: 0 }];
+    const newVariants = [...siteContent.product.variants, { id: Date.now().toString(), size: 'New Size', priceIdr: 0, shopeeLink: '', tiktokLink: '' }];
     updateContent('product', 'variants', newVariants);
   };
 
@@ -77,10 +81,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
           <form onSubmit={handleLogin} className="space-y-6">
             <input 
               type="password" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={passwordInput}
+              onChange={(e) => setPasswordInput(e.target.value)}
               className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 outline-none"
-              placeholder="Password (admin123)"
+              placeholder="Enter Password"
             />
             <button className="w-full bg-shilajit-brown text-white font-bold py-4 rounded-xl hover:bg-gold-accent transition-colors">Login</button>
             <button type="button" onClick={onExit} className="w-full text-stone-400 text-xs font-bold uppercase tracking-widest">Exit</button>
@@ -102,14 +106,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
       <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">{label}</label>
       {type === 'textarea' ? (
         <textarea 
-          value={value} 
+          value={value || ''} 
           onChange={(e) => onChange(e.target.value)}
           className="w-full bg-white border border-stone-200 rounded-xl px-4 py-3 h-24 outline-none focus:ring-2 focus:ring-gold-accent transition-all"
         />
       ) : (
         <input 
           type={type} 
-          value={value} 
+          value={value || ''} 
           onChange={(e) => onChange(type === 'number' ? Number(e.target.value) : e.target.value)}
           className="w-full bg-white border border-stone-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-gold-accent transition-all"
         />
@@ -134,6 +138,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
           <div className="pt-4 pb-2 px-4 text-[10px] font-bold text-stone-500 uppercase tracking-widest">Shop & Blog</div>
           <SidebarLink active={activeTab === 'product'} onClick={() => setActiveTab('product')} icon="🛒">Product & Prices</SidebarLink>
           <SidebarLink active={activeTab === 'blog'} onClick={() => setActiveTab('blog')} icon="✍️">Blog Journal</SidebarLink>
+          <div className="pt-4 pb-2 px-4 text-[10px] font-bold text-stone-500 uppercase tracking-widest">System</div>
+          <SidebarLink active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} icon="⚙️">Settings</SidebarLink>
         </nav>
         <button onClick={onExit} className="m-4 p-3 rounded-xl bg-white/5 text-stone-400 text-xs font-bold uppercase hover:bg-white/10 transition-all">← Back to Site</button>
       </aside>
@@ -181,22 +187,55 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
 
         {activeTab === 'product' && (
           <div className="space-y-12 animate-fade-in max-w-4xl">
-            <SectionHeader title="Product & Pricing (IDR)" subtitle="Manage packaging sizes and Indonesian Rupiah pricing." />
+            <SectionHeader title="Product & Pricing (IDR)" subtitle="Manage packaging sizes, pricing, and specific marketplace links for each size." />
+            
+            <div className="bg-white p-10 rounded-[2rem] border border-stone-200 shadow-sm space-y-6">
+              <h3 className="text-xl font-bold text-shilajit-brown serif border-b border-stone-100 pb-4">Product Imagery</h3>
+              <Field label="Product Feature Image URL" value={siteContent.product.image} onChange={(v) => updateContent('product', 'image', v)} />
+              <div className="mt-4 overflow-hidden rounded-2xl border border-stone-200 aspect-video bg-stone-100">
+                <img src={siteContent.product.image} className="w-full h-full object-cover transition-transform hover:scale-105 duration-700" alt="Product Preview" />
+              </div>
+            </div>
+
             <div className="bg-white p-10 rounded-[2rem] border border-stone-200 shadow-sm space-y-8">
-              <h3 className="text-xl font-bold text-shilajit-brown serif border-b border-stone-100 pb-4">Packaging Variants</h3>
-              <div className="space-y-6">
+              <h3 className="text-xl font-bold text-shilajit-brown serif border-b border-stone-100 pb-4">Packaging Variants & Direct Links</h3>
+              <div className="space-y-12">
                 {siteContent.product.variants.map((v, idx) => (
-                  <div key={v.id} className="flex items-end gap-6 p-6 bg-stone-50 rounded-2xl border border-stone-100">
-                    <div className="flex-1">
-                      <Field label={`Variant #${idx + 1} - Size`} value={v.size} onChange={(val) => updateVariant(idx, 'size', val)} />
+                  <div key={v.id} className="p-8 bg-stone-50 rounded-[2rem] border border-stone-100 space-y-6">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="bg-shilajit-brown text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Variant #{idx + 1}</span>
+                      <button onClick={() => removeVariant(v.id)} className="text-red-400 hover:text-red-600 font-bold text-xs uppercase tracking-widest">Remove Variant</button>
                     </div>
-                    <div className="flex-1">
-                      <Field label={`Price (IDR)`} value={v.priceIdr} onChange={(val) => updateVariant(idx, 'priceIdr', val)} type="number" />
+                    
+                    <div className="grid grid-cols-2 gap-6">
+                      <Field label="Size Label (e.g. 15 Grams)" value={v.size} onChange={(val) => updateVariant(idx, 'size', val)} />
+                      <Field label="Price (IDR)" value={v.priceIdr} onChange={(val) => updateVariant(idx, 'priceIdr', val)} type="number" />
+                      <div className="col-span-2">
+                         <div className="p-6 bg-white rounded-2xl border border-stone-200 space-y-4">
+                            <h4 className="text-xs font-bold text-shilajit-brown uppercase tracking-widest mb-2 flex items-center gap-2">
+                               <span className="w-2 h-2 rounded-full bg-gold-accent"></span>
+                               Marketplace Redirects (Unique for this size)
+                            </h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                               <Field label="Shopee Link" value={v.shopeeLink || ''} onChange={(val) => updateVariant(idx, 'shopeeLink', val)} />
+                               <Field label="TikTok Link" value={v.tiktokLink || ''} onChange={(val) => updateVariant(idx, 'tiktokLink', val)} />
+                            </div>
+                         </div>
+                      </div>
                     </div>
-                    <button onClick={() => removeVariant(v.id)} className="mb-2 p-3 text-red-400 hover:text-red-600 font-bold text-xs uppercase">Remove</button>
                   </div>
                 ))}
-                <button onClick={addVariant} className="w-full py-4 border-2 border-dashed border-stone-200 rounded-2xl text-stone-400 font-bold text-sm hover:border-gold-accent hover:text-gold-accent transition-all">+ Add New Size/Price Variant</button>
+                <button onClick={addVariant} className="w-full py-8 border-2 border-dashed border-stone-200 rounded-[2rem] text-stone-400 font-bold text-sm hover:border-gold-accent hover:text-gold-accent transition-all group">
+                   <span className="block text-2xl mb-2 group-hover:scale-125 transition-transform">+</span>
+                   Add New Size / Price Variant
+                </button>
+              </div>
+            </div>
+
+            <div className="bg-white p-10 rounded-[2rem] border border-stone-200 shadow-sm space-y-8">
+              <h3 className="text-xl font-bold text-shilajit-brown serif border-b border-stone-100 pb-4">Communication</h3>
+              <div className="grid grid-cols-1 gap-6">
+                <Field label="WhatsApp Number (Format: 62812...)" value={siteContent.product.whatsapp} onChange={(v) => updateContent('product', 'whatsapp', v)} />
               </div>
             </div>
           </div>
@@ -208,8 +247,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
             <div className="grid grid-cols-2 gap-8">
               <Field label="Section Title (EN)" value={siteContent.intro.titleEn} onChange={(v) => updateContent('intro', 'titleEn', v)} />
               <Field label="Section Title (ID)" value={siteContent.intro.titleId} onChange={(v) => updateContent('intro', 'titleId', v)} />
-              <Field label="Body Text (EN)" value={siteContent.intro.descEn} onChange={(v) => updateContent('intro', 'descEn', v)} type="textarea" />
-              <Field label="Body Text (ID)" value={siteContent.intro.descId} onChange={(v) => updateContent('intro', 'descId', v)} type="textarea" />
+              <div className="col-span-2">
+                <Field label="Body Text (EN)" value={siteContent.intro.descEn} onChange={(v) => updateContent('intro', 'descEn', v)} type="textarea" />
+                <Field label="Body Text (ID)" value={siteContent.intro.descId} onChange={(v) => updateContent('intro', 'descId', v)} type="textarea" />
+              </div>
               <Field label="Quote Overlay (EN)" value={siteContent.intro.quoteEn} onChange={(v) => updateContent('intro', 'quoteEn', v)} />
               <Field label="Quote Overlay (ID)" value={siteContent.intro.quoteId} onChange={(v) => updateContent('intro', 'quoteId', v)} />
               <div className="col-span-2">
@@ -320,6 +361,25 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                 </table>
               </div>
             )}
+          </div>
+        )}
+
+        {activeTab === 'settings' && (
+          <div className="space-y-12 animate-fade-in max-w-4xl">
+            <SectionHeader title="System Settings" subtitle="Configure administrator access and security." />
+            
+            <div className="bg-white p-10 rounded-[2rem] border border-stone-200 shadow-sm space-y-6">
+              <h3 className="text-xl font-bold text-shilajit-brown serif border-b border-stone-100 pb-4">Security</h3>
+              <Field 
+                label="Administrator Password" 
+                value={siteContent.settings.adminPassword} 
+                onChange={(v) => updateContent('settings', 'adminPassword', v)} 
+                type="text"
+              />
+              <p className="text-[10px] text-stone-400 uppercase tracking-widest font-bold">
+                * This password is used to access the Anzil CMS. Keep it secure.
+              </p>
+            </div>
           </div>
         )}
       </main>

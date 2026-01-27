@@ -11,15 +11,13 @@ interface ProductFeatureProps {
     descId: string;
     image: string;
     whatsapp: string;
-    shopee: string;
-    tiktok: string;
     variants: ProductVariant[];
   };
 }
 
 const ProductFeature: React.FC<ProductFeatureProps> = ({ content }) => {
   const { language, t } = useLanguage();
-  const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(content.variants[0] || { id: '0', size: 'N/A', priceIdr: 0 });
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(content.variants[0] || { id: '0', size: 'N/A', priceIdr: 0, shopeeLink: '', tiktokLink: '' });
 
   const formatIdr = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -28,6 +26,10 @@ const ProductFeature: React.FC<ProductFeatureProps> = ({ content }) => {
       minimumFractionDigits: 0
     }).format(amount);
   };
+
+  // Strictly using variant links
+  const shopeeTarget = selectedVariant.shopeeLink || '#';
+  const tiktokTarget = selectedVariant.tiktokLink || '#';
 
   return (
     <section id="shop" className="py-24 bg-stone-50">
@@ -113,8 +115,8 @@ const ProductFeature: React.FC<ProductFeatureProps> = ({ content }) => {
                 <div className="text-green-500 font-bold text-xs uppercase group-hover:translate-x-1 transition-transform">Buy Now →</div>
               </a>
               <div className="grid grid-cols-2 gap-4">
-                <a href={content.shopee} target="_blank" className="flex items-center justify-center p-5 rounded-2xl border border-stone-200 bg-white hover:border-orange-500 hover:text-orange-500 transition-all text-xs font-bold uppercase tracking-widest">Shopee Mall</a>
-                <a href={content.tiktok} target="_blank" className="flex items-center justify-center p-5 rounded-2xl border border-stone-200 bg-white hover:border-black hover:text-black transition-all text-xs font-bold uppercase tracking-widest">TikTok Shop</a>
+                <a href={shopeeTarget} target="_blank" className={`flex items-center justify-center p-5 rounded-2xl border border-stone-200 bg-white transition-all text-xs font-bold uppercase tracking-widest text-center ${shopeeTarget === '#' ? 'opacity-30 cursor-not-allowed' : 'hover:border-orange-500 hover:text-orange-500'}`}>Shopee Mall</a>
+                <a href={tiktokTarget} target="_blank" className={`flex items-center justify-center p-5 rounded-2xl border border-stone-200 bg-white transition-all text-xs font-bold uppercase tracking-widest text-center ${tiktokTarget === '#' ? 'opacity-30 cursor-not-allowed' : 'hover:border-black hover:text-black'}`}>TikTok Shop</a>
               </div>
             </div>
 
