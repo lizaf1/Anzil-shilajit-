@@ -5,7 +5,6 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Benefits from './components/Benefits';
 import ProductFeature from './components/ProductFeature';
-import AIAssistant from './components/AIAssistant';
 import Footer from './components/Footer';
 import CertificatesPage from './components/CertificatesPage';
 import BlogPage from './components/BlogPage';
@@ -64,22 +63,6 @@ export interface EditableContent {
     subtitleEn: string;
     subtitleId: string;
     items: Array<{ titleEn: string; titleId: string; descEn: string; descId: string }>;
-  };
-  aiAssistant: {
-    titleEn: string;
-    titleId: string;
-    descEn: string;
-    descId: string;
-    initialEn: string;
-    initialId: string;
-    placeholderEn: string;
-    placeholderId: string;
-    expertNameEn: string;
-    expertNameId: string;
-    statusEn: string;
-    statusId: string;
-    featuresEn: string[];
-    featuresId: string[];
   };
   faq: {
     titleEn: string;
@@ -147,22 +130,6 @@ const DEFAULT_CONTENT: EditableContent = {
       descId: translations.id.benefits.items?.[i]?.desc || "",
     })),
   },
-  aiAssistant: {
-    titleEn: "Wellness Concierge",
-    titleId: "Konsultan Kesejahteraan",
-    descEn: "Ask our AI expert about dosage, benefits, and the science behind Anzil Himalayan Shilajit.",
-    descId: "Tanyakan kepada ahli AI kami tentang dosis, manfaat, dan sains di balik Anzil Himalayan Shilajit.",
-    initialEn: "Hello! I am your Anzil wellness guide. How can I help you optimize your health with Shilajit today?",
-    initialId: "Halo! Saya panduan kesejahteraan Anzil Anda. Bagaimana saya bisa membantu Anda mengoptimalkan kesehatan Anda dengan Shilajit hari ini?",
-    placeholderEn: "Ask about usage, minerals, or benefits...",
-    placeholderId: "Tanya tentang penggunaan, mineral, atau manfaat...",
-    expertNameEn: "Anzil Expert",
-    expertNameId: "Ahli Anzil",
-    statusEn: "Online | Himalayan Wisdom",
-    statusId: "Online | Kebijaksanaan Himalaya",
-    featuresEn: ["Dosage Guidance", "Mineral Analysis", "Usage Tips"],
-    featuresId: ["Panduan Dosis", "Analisis Mineral", "Tips Penggunaan"],
-  },
   faq: {
     titleEn: translations.en.faq.title,
     titleId: translations.id.faq.title,
@@ -228,7 +195,6 @@ const AppContent: React.FC = () => {
           intro: { ...DEFAULT_CONTENT.intro, ...parsed.intro },
           product: { ...DEFAULT_CONTENT.product, ...parsed.product },
           benefits: { ...DEFAULT_CONTENT.benefits, ...parsed.benefits },
-          aiAssistant: { ...DEFAULT_CONTENT.aiAssistant, ...parsed.aiAssistant },
           faq: { ...DEFAULT_CONTENT.faq, ...parsed.faq },
           certs: { 
             ...DEFAULT_CONTENT.certs, 
@@ -325,7 +291,6 @@ const AppContent: React.FC = () => {
           </section>
 
           <Benefits content={siteContent.benefits} />
-          <AIAssistant content={siteContent.aiAssistant} />
           <ProductFeature content={siteContent.product} />
           
           <section id="faq" className="py-24 bg-white">

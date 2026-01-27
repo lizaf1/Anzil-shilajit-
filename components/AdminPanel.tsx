@@ -13,7 +13,7 @@ interface AdminPanelProps {
   setAuthenticated: (val: boolean) => void;
 }
 
-type AdminTab = 'dashboard' | 'hero' | 'intro' | 'benefits' | 'ai' | 'faq' | 'certs' | 'product' | 'blog' | 'settings';
+type AdminTab = 'dashboard' | 'hero' | 'intro' | 'benefits' | 'faq' | 'certs' | 'product' | 'blog' | 'settings';
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ 
   onExit, 
@@ -161,7 +161,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
           <SidebarLink active={activeTab === 'hero'} onClick={() => setActiveTab('hero')} icon="🏔️" label="Hero Section" />
           <SidebarLink active={activeTab === 'intro'} onClick={() => setActiveTab('intro')} icon="📖" label="Intro" />
           <SidebarLink active={activeTab === 'benefits'} onClick={() => setActiveTab('benefits')} icon="✨" label="Benefits" />
-          <SidebarLink active={activeTab === 'ai'} onClick={() => setActiveTab('ai')} icon="🤖" label="AI Assistant" />
           <SidebarLink active={activeTab === 'faq'} onClick={() => setActiveTab('faq')} icon="❓" label="FAQ" />
           <SidebarLink active={activeTab === 'certs'} onClick={() => setActiveTab('certs')} icon="📜" label="Certificates" />
           <SidebarLink active={activeTab === 'product'} onClick={() => setActiveTab('product')} icon="🛒" label="Pricing" />
@@ -266,22 +265,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
                 </div>
               ))}
            </div>
-        )}
-
-        {activeTab === 'ai' && (
-          <div className="animate-fade-in max-w-4xl space-y-12">
-            <SectionHeader title="AI Wellness Expert" desc="Configure your automated specialist." />
-            <div className="grid grid-cols-2 gap-8">
-              <Field label="Expert Name (EN)" value={siteContent.aiAssistant.expertNameEn} onChange={v => updateContent('aiAssistant', 'expertNameEn', v)} />
-              <Field label="Expert Name (ID)" value={siteContent.aiAssistant.expertNameId} onChange={v => updateContent('aiAssistant', 'expertNameId', v)} />
-              <Field label="Status Text (EN)" value={siteContent.aiAssistant.statusEn} onChange={v => updateContent('aiAssistant', 'statusEn', v)} />
-              <Field label="Status Text (ID)" value={siteContent.aiAssistant.statusId} onChange={v => updateContent('aiAssistant', 'statusId', v)} />
-              <div className="col-span-2">
-                <Field label="Initial Greeting (EN)" value={siteContent.aiAssistant.initialEn} onChange={v => updateContent('aiAssistant', 'initialEn', v)} type="textarea" />
-                <Field label="Initial Greeting (ID)" value={siteContent.aiAssistant.initialId} onChange={v => updateContent('aiAssistant', 'initialId', v)} type="textarea" />
-              </div>
-            </div>
-          </div>
         )}
 
         {activeTab === 'faq' && (
