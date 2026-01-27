@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { BlogPost } from '../types';
-import { EditableContent, ProductVariant } from '../App';
+import { EditableContent, ProductVariant, CertStat } from '../App';
 
 interface AdminPanelProps {
   onExit: () => void;
@@ -13,7 +13,7 @@ interface AdminPanelProps {
   setAuthenticated: (val: boolean) => void;
 }
 
-type AdminTab = 'dashboard' | 'hero' | 'intro' | 'benefits' | 'faq' | 'certs' | 'product' | 'blog' | 'settings';
+type AdminTab = 'dashboard' | 'hero' | 'intro' | 'benefits' | 'ai' | 'faq' | 'certs' | 'product' | 'blog' | 'settings';
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ 
   onExit, 
@@ -54,6 +54,22 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
     updateContent(section, 'items', newItems);
   };
 
+  const updateCertStat = (index: number, field: keyof CertStat, value: string) => {
+    const newStats = [...siteContent.certs.stats];
+    newStats[index] = { ...newStats[index], [field]: value };
+    updateContent('certs', 'stats', newStats);
+  };
+
+  const addCertStat = () => {
+    const newStats = [...(siteContent.certs.stats || []), { value: '0%', labelEn: 'New Metric', labelId: 'Metrik Baru' }];
+    updateContent('certs', 'stats', newStats);
+  };
+
+  const removeCertStat = (index: number) => {
+    const newStats = siteContent.certs.stats.filter((_, i) => i !== index);
+    updateContent('certs', 'stats', newStats);
+  };
+
   const updateVariant = (index: number, field: keyof ProductVariant, value: any) => {
     const newVariants = [...siteContent.product.variants];
     newVariants[index] = { ...newVariants[index], [field]: value };
@@ -70,95 +86,106 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
     updateContent('product', 'variants', newVariants);
   };
 
+  const addCert = () => {
+    const newCerts = [...siteContent.certs.items, { titleEn: 'New Test', titleId: 'Uji Baru', descEn: '', descId: '', idNum: 'ID-000', image: '' }];
+    updateContent('certs', 'items', newCerts);
+  };
+
+  const removeCert = (index: number) => {
+    const newCerts = siteContent.certs.items.filter((_, i) => i !== index);
+    updateContent('certs', 'items', newCerts);
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, callback: (url: string) => void) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => callback(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
+
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-shilajit-brown flex items-center justify-center p-6">
-        <div className="max-w-md w-full bg-white rounded-[2rem] p-10 shadow-2xl">
-          <div className="text-center mb-10">
-            <h1 className="text-3xl font-bold text-shilajit-brown serif mb-2">Anzil Command Center</h1>
-            <p className="text-stone-400 text-sm tracking-widest uppercase">Admin Login</p>
-          </div>
+      <div className="min-h-screen bg-shilajit-brown flex items-center justify-center p-6 text-center">
+        <div className="max-w-md w-full bg-white rounded-[3rem] p-12 shadow-2xl">
+          <h1 className="text-3xl font-bold text-shilajit-brown serif mb-2">Anzil CMS</h1>
+          <p className="text-stone-400 text-xs font-bold uppercase tracking-widest mb-10">Restricted Access</p>
           <form onSubmit={handleLogin} className="space-y-6">
             <input 
               type="password" 
               value={passwordInput}
               onChange={(e) => setPasswordInput(e.target.value)}
-              className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 outline-none"
+              className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-4 outline-none text-center"
               placeholder="Enter Password"
             />
-            <button className="w-full bg-shilajit-brown text-white font-bold py-4 rounded-xl hover:bg-gold-accent transition-colors">Login</button>
-            <button type="button" onClick={onExit} className="w-full text-stone-400 text-xs font-bold uppercase tracking-widest">Exit</button>
+            <button className="w-full bg-shilajit-brown text-white font-bold py-4 rounded-xl hover:bg-gold-accent transition-all shadow-lg">Login</button>
+            <button type="button" onClick={onExit} className="text-stone-300 text-[10px] font-bold uppercase tracking-widest">Return to site</button>
           </form>
         </div>
       </div>
     );
   }
 
-  const SectionHeader = ({ title, subtitle }: { title: string; subtitle: string }) => (
-    <header className="mb-10">
-      <h1 className="text-4xl font-bold text-shilajit-brown serif">{title}</h1>
-      <p className="text-stone-500">{subtitle}</p>
-    </header>
+  const SidebarLink = ({ active, onClick, icon, label }: { active: boolean, onClick: () => void, icon: string, label: string }) => (
+    <button onClick={onClick} className={`w-full flex items-center space-x-3 px-6 py-4 rounded-xl transition-all ${active ? 'bg-white/10 text-white shadow-inner' : 'text-stone-500 hover:text-white hover:bg-white/5'}`}>
+      <span className="text-xl">{icon}</span>
+      <span className="font-bold text-[10px] uppercase tracking-[0.2em]">{label}</span>
+    </button>
   );
 
-  const Field = ({ label, value, onChange, type = 'text' }: { label: string; value: string | number; onChange: (val: any) => void, type?: 'text' | 'textarea' | 'number' }) => (
+  const Field = ({ label, value, onChange, type = 'text' }: { label: string, value: string | number, onChange: (v: any) => void, type?: 'text' | 'textarea' | 'number' }) => (
     <div className="space-y-2">
       <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">{label}</label>
       {type === 'textarea' ? (
-        <textarea 
-          value={value || ''} 
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full bg-white border border-stone-200 rounded-xl px-4 py-3 h-24 outline-none focus:ring-2 focus:ring-gold-accent transition-all"
-        />
+        <textarea value={value} onChange={e => onChange(e.target.value)} className="w-full bg-white border border-stone-200 rounded-xl px-4 py-3 h-32 outline-none focus:ring-2 focus:ring-gold-accent" />
       ) : (
-        <input 
-          type={type} 
-          value={value || ''} 
-          onChange={(e) => onChange(type === 'number' ? Number(e.target.value) : e.target.value)}
-          className="w-full bg-white border border-stone-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-gold-accent transition-all"
-        />
+        <input type={type} value={value} onChange={e => onChange(type === 'number' ? Number(e.target.value) : e.target.value)} className="w-full bg-white border border-stone-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-gold-accent" />
       )}
+    </div>
+  );
+
+  const SectionHeader = ({ title, desc }: { title: string, desc: string }) => (
+    <div className="mb-10">
+      <h1 className="text-4xl font-bold serif text-shilajit-brown mb-2">{title}</h1>
+      <p className="text-stone-500 text-sm">{desc}</p>
     </div>
   );
 
   return (
     <div className="min-h-screen bg-stone-50 flex">
-      <aside className="w-64 bg-shilajit-brown text-white flex flex-col sticky top-0 h-screen overflow-y-auto">
-        <div className="p-8 text-center border-b border-white/5">
-          <h2 className="text-2xl font-bold serif">ANZIL CMS</h2>
-        </div>
-        <nav className="flex-1 p-4 space-y-1">
-          <SidebarLink active={activeTab === 'dashboard'} onClick={() => setActiveTab('dashboard')} icon="📊">Overview</SidebarLink>
-          <div className="pt-4 pb-2 px-4 text-[10px] font-bold text-stone-500 uppercase tracking-widest">Main Pages</div>
-          <SidebarLink active={activeTab === 'hero'} onClick={() => setActiveTab('hero')} icon="🏔️">Hero Section</SidebarLink>
-          <SidebarLink active={activeTab === 'intro'} onClick={() => setActiveTab('intro')} icon="📖">Intro Section</SidebarLink>
-          <SidebarLink active={activeTab === 'benefits'} onClick={() => setActiveTab('benefits')} icon="✨">Benefits</SidebarLink>
-          <SidebarLink active={activeTab === 'faq'} onClick={() => setActiveTab('faq')} icon="❓">FAQ</SidebarLink>
-          <SidebarLink active={activeTab === 'certs'} onClick={() => setActiveTab('certs')} icon="📜">Certificates</SidebarLink>
-          <div className="pt-4 pb-2 px-4 text-[10px] font-bold text-stone-500 uppercase tracking-widest">Shop & Blog</div>
-          <SidebarLink active={activeTab === 'product'} onClick={() => setActiveTab('product')} icon="🛒">Product & Prices</SidebarLink>
-          <SidebarLink active={activeTab === 'blog'} onClick={() => setActiveTab('blog')} icon="✍️">Blog Journal</SidebarLink>
-          <div className="pt-4 pb-2 px-4 text-[10px] font-bold text-stone-500 uppercase tracking-widest">System</div>
-          <SidebarLink active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} icon="⚙️">Settings</SidebarLink>
+      <aside className="w-64 bg-shilajit-brown text-white flex flex-col sticky top-0 h-screen">
+        <div className="p-10 border-b border-white/5"><h2 className="text-2xl font-bold serif">ANZIL</h2></div>
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+          <SidebarLink active={activeTab === 'dashboard'} onClick={() => setActiveTab('dashboard')} icon="📊" label="Overview" />
+          <SidebarLink active={activeTab === 'hero'} onClick={() => setActiveTab('hero')} icon="🏔️" label="Hero Section" />
+          <SidebarLink active={activeTab === 'intro'} onClick={() => setActiveTab('intro')} icon="📖" label="Intro" />
+          <SidebarLink active={activeTab === 'benefits'} onClick={() => setActiveTab('benefits')} icon="✨" label="Benefits" />
+          <SidebarLink active={activeTab === 'ai'} onClick={() => setActiveTab('ai')} icon="🤖" label="AI Assistant" />
+          <SidebarLink active={activeTab === 'faq'} onClick={() => setActiveTab('faq')} icon="❓" label="FAQ" />
+          <SidebarLink active={activeTab === 'certs'} onClick={() => setActiveTab('certs')} icon="📜" label="Certificates" />
+          <SidebarLink active={activeTab === 'product'} onClick={() => setActiveTab('product')} icon="🛒" label="Pricing" />
+          <SidebarLink active={activeTab === 'blog'} onClick={() => setActiveTab('blog')} icon="✍️" label="Blog Journal" />
+          <SidebarLink active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} icon="⚙️" label="Security" />
         </nav>
-        <button onClick={onExit} className="m-4 p-3 rounded-xl bg-white/5 text-stone-400 text-xs font-bold uppercase hover:bg-white/10 transition-all">← Back to Site</button>
+        <button onClick={onExit} className="m-6 p-3 rounded-xl bg-white/5 text-stone-400 text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all">← Back to Site</button>
       </aside>
 
-      <main className="flex-1 p-12 overflow-y-auto">
+      <main className="flex-1 p-16 overflow-y-auto">
         {activeTab === 'dashboard' && (
-          <div className="space-y-8 animate-fade-in">
-            <SectionHeader title="Dashboard" subtitle="Global performance and content status." />
-            <div className="grid grid-cols-3 gap-6">
-              <div className="bg-white p-8 rounded-3xl shadow-sm border border-stone-100">
-                <p className="text-stone-400 text-[10px] font-bold uppercase mb-2">Website Health</p>
-                <p className="text-3xl font-bold text-shilajit-brown">98%</p>
+          <div className="animate-fade-in">
+            <SectionHeader title="Overview" desc="Summary of your digital wellness center." />
+            <div className="grid grid-cols-3 gap-8">
+              <div className="bg-white p-10 rounded-[2.5rem] border border-stone-200 shadow-sm">
+                <p className="text-stone-400 text-[10px] font-bold uppercase mb-2">Platform Version</p>
+                <p className="text-3xl font-bold text-shilajit-brown">v2.5.0</p>
               </div>
-              <div className="bg-white p-8 rounded-3xl shadow-sm border border-stone-100">
-                <p className="text-stone-400 text-[10px] font-bold uppercase mb-2">Total Articles</p>
+              <div className="bg-white p-10 rounded-[2.5rem] border border-stone-200 shadow-sm">
+                <p className="text-stone-400 text-[10px] font-bold uppercase mb-2">Total Journal Articles</p>
                 <p className="text-3xl font-bold text-shilajit-brown">{blogPosts.length}</p>
               </div>
-              <div className="bg-white p-8 rounded-3xl shadow-sm border border-stone-100">
-                <p className="text-stone-400 text-[10px] font-bold uppercase mb-2">Packaging Sizes</p>
+              <div className="bg-white p-10 rounded-[2.5rem] border border-stone-200 shadow-sm">
+                <p className="text-stone-400 text-[10px] font-bold uppercase mb-2">Product Variants</p>
                 <p className="text-3xl font-bold text-shilajit-brown">{siteContent.product.variants.length}</p>
               </div>
             </div>
@@ -166,231 +193,202 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
         )}
 
         {activeTab === 'hero' && (
-          <div className="space-y-8 animate-fade-in max-w-4xl">
-            <SectionHeader title="Hero Section" subtitle="Hero imagery and primary calls to action." />
+          <div className="animate-fade-in max-w-4xl space-y-12">
+            <SectionHeader title="Hero Section" desc="First impression and main call to actions." />
             <div className="grid grid-cols-2 gap-8">
-              <Field label="Main Title (EN)" value={siteContent.hero.titleEn} onChange={(v) => updateContent('hero', 'titleEn', v)} />
-              <Field label="Main Title (ID)" value={siteContent.hero.titleId} onChange={(v) => updateContent('hero', 'titleId', v)} />
-              <Field label="Accent Title (EN)" value={siteContent.hero.titleAccentEn} onChange={(v) => updateContent('hero', 'titleAccentEn', v)} />
-              <Field label="Accent Title (ID)" value={siteContent.hero.titleAccentId} onChange={(v) => updateContent('hero', 'titleAccentId', v)} />
+              <Field label="Main Title (EN)" value={siteContent.hero.titleEn} onChange={v => updateContent('hero', 'titleEn', v)} />
+              <Field label="Main Title (ID)" value={siteContent.hero.titleId} onChange={v => updateContent('hero', 'titleId', v)} />
+              <Field label="Accent Title (EN)" value={siteContent.hero.titleAccentEn} onChange={v => updateContent('hero', 'titleAccentEn', v)} />
+              <Field label="Accent Title (ID)" value={siteContent.hero.titleAccentId} onChange={v => updateContent('hero', 'titleAccentId', v)} />
               <div className="col-span-2">
-                <Field label="Description (EN)" value={siteContent.hero.descEn} onChange={(v) => updateContent('hero', 'descEn', v)} type="textarea" />
-                <Field label="Description (ID)" value={siteContent.hero.descId} onChange={(v) => updateContent('hero', 'descId', v)} type="textarea" />
+                <Field label="Description (EN)" value={siteContent.hero.descEn} onChange={v => updateContent('hero', 'descEn', v)} type="textarea" />
+                <Field label="Description (ID)" value={siteContent.hero.descId} onChange={v => updateContent('hero', 'descId', v)} type="textarea" />
               </div>
               <div className="col-span-2">
-                <Field label="Hero Image URL" value={siteContent.hero.image} onChange={(v) => updateContent('hero', 'image', v)} />
-                <img src={siteContent.hero.image} className="mt-4 h-60 rounded-xl object-cover border border-stone-200" />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'product' && (
-          <div className="space-y-12 animate-fade-in max-w-4xl">
-            <SectionHeader title="Product & Pricing (IDR)" subtitle="Manage packaging sizes, pricing, and specific marketplace links for each size." />
-            
-            <div className="bg-white p-10 rounded-[2rem] border border-stone-200 shadow-sm space-y-6">
-              <h3 className="text-xl font-bold text-shilajit-brown serif border-b border-stone-100 pb-4">Product Imagery</h3>
-              <Field label="Product Feature Image URL" value={siteContent.product.image} onChange={(v) => updateContent('product', 'image', v)} />
-              <div className="mt-4 overflow-hidden rounded-2xl border border-stone-200 aspect-video bg-stone-100">
-                <img src={siteContent.product.image} className="w-full h-full object-cover transition-transform hover:scale-105 duration-700" alt="Product Preview" />
-              </div>
-            </div>
-
-            <div className="bg-white p-10 rounded-[2rem] border border-stone-200 shadow-sm space-y-8">
-              <h3 className="text-xl font-bold text-shilajit-brown serif border-b border-stone-100 pb-4">Packaging Variants & Direct Links</h3>
-              <div className="space-y-12">
-                {siteContent.product.variants.map((v, idx) => (
-                  <div key={v.id} className="p-8 bg-stone-50 rounded-[2rem] border border-stone-100 space-y-6">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="bg-shilajit-brown text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Variant #{idx + 1}</span>
-                      <button onClick={() => removeVariant(v.id)} className="text-red-400 hover:text-red-600 font-bold text-xs uppercase tracking-widest">Remove Variant</button>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-6">
-                      <Field label="Size Label (e.g. 15 Grams)" value={v.size} onChange={(val) => updateVariant(idx, 'size', val)} />
-                      <Field label="Price (IDR)" value={v.priceIdr} onChange={(val) => updateVariant(idx, 'priceIdr', val)} type="number" />
-                      <div className="col-span-2">
-                         <div className="p-6 bg-white rounded-2xl border border-stone-200 space-y-4">
-                            <h4 className="text-xs font-bold text-shilajit-brown uppercase tracking-widest mb-2 flex items-center gap-2">
-                               <span className="w-2 h-2 rounded-full bg-gold-accent"></span>
-                               Marketplace Redirects (Unique for this size)
-                            </h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                               <Field label="Shopee Link" value={v.shopeeLink || ''} onChange={(val) => updateVariant(idx, 'shopeeLink', val)} />
-                               <Field label="TikTok Link" value={v.tiktokLink || ''} onChange={(val) => updateVariant(idx, 'tiktokLink', val)} />
-                            </div>
-                         </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                <button onClick={addVariant} className="w-full py-8 border-2 border-dashed border-stone-200 rounded-[2rem] text-stone-400 font-bold text-sm hover:border-gold-accent hover:text-gold-accent transition-all group">
-                   <span className="block text-2xl mb-2 group-hover:scale-125 transition-transform">+</span>
-                   Add New Size / Price Variant
-                </button>
-              </div>
-            </div>
-
-            <div className="bg-white p-10 rounded-[2rem] border border-stone-200 shadow-sm space-y-8">
-              <h3 className="text-xl font-bold text-shilajit-brown serif border-b border-stone-100 pb-4">Communication</h3>
-              <div className="grid grid-cols-1 gap-6">
-                <Field label="WhatsApp Number (Format: 62812...)" value={siteContent.product.whatsapp} onChange={(v) => updateContent('product', 'whatsapp', v)} />
+                 <Field label="Hero Image URL" value={siteContent.hero.image} onChange={v => updateContent('hero', 'image', v)} />
+                 <input type="file" onChange={e => handleImageUpload(e, url => updateContent('hero', 'image', url))} className="mt-2 text-xs" />
+                 {siteContent.hero.image && (
+                   <img src={siteContent.hero.image} className="mt-4 h-60 rounded-2xl object-cover w-full border border-stone-200" alt="Hero Preview" />
+                 )}
               </div>
             </div>
           </div>
         )}
 
         {activeTab === 'intro' && (
-          <div className="space-y-8 animate-fade-in max-w-4xl">
-            <SectionHeader title="Intro Section" subtitle="Heritage and mountain sourcing narrative." />
+          <div className="animate-fade-in max-w-4xl space-y-12">
+            <SectionHeader title="Intro Section" desc="Heritage and sourcing storytelling." />
             <div className="grid grid-cols-2 gap-8">
-              <Field label="Section Title (EN)" value={siteContent.intro.titleEn} onChange={(v) => updateContent('intro', 'titleEn', v)} />
-              <Field label="Section Title (ID)" value={siteContent.intro.titleId} onChange={(v) => updateContent('intro', 'titleId', v)} />
+              <Field label="Title (EN)" value={siteContent.intro.titleEn} onChange={v => updateContent('intro', 'titleEn', v)} />
+              <Field label="Title (ID)" value={siteContent.intro.titleId} onChange={v => updateContent('intro', 'titleId', v)} />
               <div className="col-span-2">
-                <Field label="Body Text (EN)" value={siteContent.intro.descEn} onChange={(v) => updateContent('intro', 'descEn', v)} type="textarea" />
-                <Field label="Body Text (ID)" value={siteContent.intro.descId} onChange={(v) => updateContent('intro', 'descId', v)} type="textarea" />
+                <Field label="Body (EN)" value={siteContent.intro.descEn} onChange={v => updateContent('intro', 'descEn', v)} type="textarea" />
+                <Field label="Body (ID)" value={siteContent.intro.descId} onChange={v => updateContent('intro', 'descId', v)} type="textarea" />
               </div>
-              <Field label="Quote Overlay (EN)" value={siteContent.intro.quoteEn} onChange={(v) => updateContent('intro', 'quoteEn', v)} />
-              <Field label="Quote Overlay (ID)" value={siteContent.intro.quoteId} onChange={(v) => updateContent('intro', 'quoteId', v)} />
-              <div className="col-span-2">
-                <Field label="Intro Feature Image" value={siteContent.intro.image} onChange={(v) => updateContent('intro', 'image', v)} />
-                <img src={siteContent.intro.image} className="mt-4 h-60 rounded-2xl object-cover w-full border border-stone-200" />
+              <Field label="Altitude Label" value={siteContent.intro.statAltitude} onChange={v => updateContent('intro', 'statAltitude', v)} />
+              <Field label="Potency Label" value={siteContent.intro.statPotency} onChange={v => updateContent('intro', 'statPotency', v)} />
+              <Field label="Quote (EN)" value={siteContent.intro.quoteEn} onChange={v => updateContent('intro', 'quoteEn', v)} />
+              <Field label="Quote (ID)" value={siteContent.intro.quoteId} onChange={v => updateContent('intro', 'quoteId', v)} />
+              <div className="col-span-2 space-y-4">
+                 <Field label="Intro Feature Image URL" value={siteContent.intro.image} onChange={v => updateContent('intro', 'image', v)} />
+                 <div className="flex items-center gap-4">
+                   <label className="bg-stone-100 px-4 py-2 rounded-lg cursor-pointer hover:bg-stone-200 transition-all text-[10px] font-bold uppercase tracking-widest">
+                     Upload New Image
+                     <input type="file" onChange={e => handleImageUpload(e, url => updateContent('intro', 'image', url))} className="hidden" />
+                   </label>
+                   <span className="text-[9px] text-stone-400">Recommended: Square or 4:3 aspect ratio</span>
+                 </div>
+                 {siteContent.intro.image && (
+                   <div className="relative group">
+                     <img src={siteContent.intro.image} className="h-80 w-full rounded-[2rem] object-cover border border-stone-200 shadow-md" alt="Intro Preview" />
+                     <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-[2rem] flex items-center justify-center">
+                        <span className="bg-white/90 backdrop-blur px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest text-shilajit-brown">Current Active Image</span>
+                     </div>
+                   </div>
+                 )}
               </div>
             </div>
           </div>
         )}
 
         {activeTab === 'benefits' && (
-          <div className="space-y-12 animate-fade-in max-w-4xl">
-            <SectionHeader title="Benefits Section" subtitle="The 4 unique value propositions." />
-            <div className="grid grid-cols-2 gap-8 mb-8">
-              <Field label="Section Header (EN)" value={siteContent.benefits.titleEn} onChange={(v) => updateContent('benefits', 'titleEn', v)} />
-              <Field label="Section Header (ID)" value={siteContent.benefits.titleId} onChange={(v) => updateContent('benefits', 'titleId', v)} />
-            </div>
-            {siteContent.benefits.items.map((item, i) => (
-              <div key={i} className="p-10 bg-white rounded-[2rem] border border-stone-200 shadow-sm space-y-6">
-                <h3 className="font-bold text-gold-accent uppercase text-xs tracking-[0.2em]">Benefit Card #{i + 1}</h3>
-                <div className="grid grid-cols-2 gap-6">
-                  <Field label="Card Title (EN)" value={item.titleEn} onChange={(v) => updateNestedContent('benefits', i, 'titleEn', v)} />
-                  <Field label="Card Title (ID)" value={item.titleId} onChange={(v) => updateNestedContent('benefits', i, 'titleId', v)} />
-                  <div className="col-span-2">
-                    <Field label="Card Body (EN)" value={item.descEn} onChange={(v) => updateNestedContent('benefits', i, 'descEn', v)} type="textarea" />
-                    <Field label="Card Body (ID)" value={item.descId} onChange={(v) => updateNestedContent('benefits', i, 'descId', v)} type="textarea" />
+           <div className="animate-fade-in max-w-4xl space-y-12">
+              <SectionHeader title="Benefits Cards" desc="Manage the 4 core value propositions." />
+              {siteContent.benefits.items.map((item, i) => (
+                <div key={i} className="bg-white p-8 rounded-3xl border border-stone-200 space-y-4">
+                  <h3 className="font-bold text-gold-accent uppercase text-[10px]">Benefit #{i+1}</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <Field label="Title (EN)" value={item.titleEn} onChange={v => updateNestedContent('benefits', i, 'titleEn', v)} />
+                    <Field label="Title (ID)" value={item.titleId} onChange={v => updateNestedContent('benefits', i, 'titleId', v)} />
                   </div>
+                  <Field label="Description (EN)" value={item.descEn} onChange={v => updateNestedContent('benefits', i, 'descEn', v)} type="textarea" />
+                  <Field label="Description (ID)" value={item.descId} onChange={v => updateNestedContent('benefits', i, 'descId', v)} type="textarea" />
                 </div>
+              ))}
+           </div>
+        )}
+
+        {activeTab === 'ai' && (
+          <div className="animate-fade-in max-w-4xl space-y-12">
+            <SectionHeader title="AI Wellness Expert" desc="Configure your automated specialist." />
+            <div className="grid grid-cols-2 gap-8">
+              <Field label="Expert Name (EN)" value={siteContent.aiAssistant.expertNameEn} onChange={v => updateContent('aiAssistant', 'expertNameEn', v)} />
+              <Field label="Expert Name (ID)" value={siteContent.aiAssistant.expertNameId} onChange={v => updateContent('aiAssistant', 'expertNameId', v)} />
+              <Field label="Status Text (EN)" value={siteContent.aiAssistant.statusEn} onChange={v => updateContent('aiAssistant', 'statusEn', v)} />
+              <Field label="Status Text (ID)" value={siteContent.aiAssistant.statusId} onChange={v => updateContent('aiAssistant', 'statusId', v)} />
+              <div className="col-span-2">
+                <Field label="Initial Greeting (EN)" value={siteContent.aiAssistant.initialEn} onChange={v => updateContent('aiAssistant', 'initialEn', v)} type="textarea" />
+                <Field label="Initial Greeting (ID)" value={siteContent.aiAssistant.initialId} onChange={v => updateContent('aiAssistant', 'initialId', v)} type="textarea" />
               </div>
-            ))}
+            </div>
           </div>
         )}
 
         {activeTab === 'faq' && (
-          <div className="space-y-12 animate-fade-in max-w-4xl">
-            <SectionHeader title="Frequently Asked Questions" subtitle="Expandable FAQ content management." />
+          <div className="animate-fade-in max-w-4xl space-y-12">
+            <SectionHeader title="FAQ" desc="Frequently asked questions list." />
             {siteContent.faq.items.map((item, i) => (
-              <div key={i} className="p-8 bg-white rounded-[2rem] border border-stone-200 shadow-sm space-y-4">
-                <Field label={`Q${i+1} (EN)`} value={item.qEn} onChange={(v) => updateNestedContent('faq', i, 'qEn', v)} />
-                <Field label={`Q${i+1} (ID)`} value={item.qId} onChange={(v) => updateNestedContent('faq', i, 'qId', v)} />
-                <Field label={`A${i+1} (EN)`} value={item.aEn} onChange={(v) => updateNestedContent('faq', i, 'aEn', v)} type="textarea" />
-                <Field label={`A${i+1} (ID)`} value={item.aId} onChange={(v) => updateNestedContent('faq', i, 'aId', v)} type="textarea" />
+              <div key={i} className="bg-white p-8 rounded-3xl border border-stone-200 space-y-4">
+                <Field label={`Q${i+1} (EN)`} value={item.qEn} onChange={v => updateNestedContent('faq', i, 'qEn', v)} />
+                <Field label={`Q${i+1} (ID)`} value={item.qId} onChange={v => updateNestedContent('faq', i, 'qId', v)} />
+                <Field label={`A${i+1} (EN)`} value={item.aEn} onChange={v => updateNestedContent('faq', i, 'aEn', v)} type="textarea" />
+                <Field label={`A${i+1} (ID)`} value={item.aId} onChange={v => updateNestedContent('faq', i, 'aId', v)} type="textarea" />
               </div>
             ))}
           </div>
         )}
 
         {activeTab === 'certs' && (
-          <div className="space-y-12 animate-fade-in max-w-4xl">
-            <SectionHeader title="Certificates & Quality" subtitle="Showcase official stamps and licenses." />
-            <div className="grid grid-cols-2 gap-8">
-              {siteContent.certs.items.map((item, i) => (
-                <div key={i} className="p-8 bg-white rounded-[2rem] border border-stone-200 shadow-sm space-y-4">
-                  <div className="flex items-center gap-4 mb-4">
-                    <img src={item.image} className="w-16 h-16 object-contain" />
-                    <Field label="Logo URL" value={item.image} onChange={(v) => updateNestedContent('certs', i, 'image', v)} />
-                  </div>
-                  <Field label="Cert Title (EN)" value={item.titleEn} onChange={(v) => updateNestedContent('certs', i, 'titleEn', v)} />
-                  <Field label="Cert Title (ID)" value={item.titleId} onChange={(v) => updateNestedContent('certs', i, 'titleId', v)} />
-                  <Field label="License / ID Num" value={item.idNum} onChange={(v) => updateNestedContent('certs', i, 'idNum', v)} />
-                </div>
-              ))}
+          <div className="animate-fade-in max-w-4xl space-y-12">
+            <SectionHeader title="Certificates" desc="Lab results and compliance data." />
+            
+            <div className="bg-white p-10 rounded-[2rem] border border-stone-200 space-y-8 shadow-sm">
+               <h3 className="text-xl font-bold serif border-b pb-4">Global Metrics (Editable Stats)</h3>
+               <div className="grid grid-cols-2 gap-8">
+                 {siteContent.certs.stats.map((s, i) => (
+                   <div key={i} className="p-6 bg-stone-50 rounded-2xl space-y-4 relative group">
+                     <button onClick={() => removeCertStat(i)} className="absolute top-2 right-2 text-red-400 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-bold">Remove</button>
+                     <Field label="Stat Value" value={s.value} onChange={v => updateCertStat(i, 'value', v)} />
+                     <Field label="Label (EN)" value={s.labelEn} onChange={v => updateCertStat(i, 'labelEn', v)} />
+                     <Field label="Label (ID)" value={s.labelId} onChange={v => updateCertStat(i, 'labelId', v)} />
+                   </div>
+                 ))}
+               </div>
+               <button onClick={addCertStat} className="w-full py-4 border-2 border-dashed rounded-xl text-stone-300 font-bold uppercase tracking-widest hover:border-gold-accent hover:text-gold-accent transition-all">+ Add Stat Metric</button>
             </div>
+
+            <div className="bg-white p-10 rounded-[2rem] border border-stone-200 space-y-8 shadow-sm">
+               <h3 className="text-xl font-bold serif border-b pb-4">Footer Compliance Label</h3>
+               <div className="grid grid-cols-2 gap-8">
+                 <Field label="Compliance Text (EN)" value={siteContent.certs.footerTextEn} onChange={v => updateContent('certs', 'footerTextEn', v)} />
+                 <Field label="Compliance Text (ID)" value={siteContent.certs.footerTextId} onChange={v => updateContent('certs', 'footerTextId', v)} />
+               </div>
+            </div>
+
+            <div className="space-y-8">
+               <h3 className="text-xl font-bold serif">Document Items</h3>
+               {siteContent.certs.items.map((item, i) => (
+                 <div key={i} className="p-10 bg-white rounded-[2rem] border border-stone-200 shadow-sm relative">
+                    <button onClick={() => removeCert(i)} className="absolute top-8 right-8 text-red-400 font-bold text-[10px] uppercase">Remove</button>
+                    <div className="grid grid-cols-2 gap-8">
+                       <Field label="Doc ID" value={item.idNum} onChange={v => updateNestedContent('certs', i, 'idNum', v)} />
+                       <Field label="Title (EN)" value={item.titleEn} onChange={v => updateNestedContent('certs', i, 'titleEn', v)} />
+                       <div className="col-span-2">
+                         <Field label="Image URL" value={item.image} onChange={v => updateNestedContent('certs', i, 'image', v)} />
+                         <input type="file" onChange={e => handleImageUpload(e, url => updateNestedContent('certs', i, 'image', url))} className="mt-2 text-xs" />
+                       </div>
+                    </div>
+                 </div>
+               ))}
+               <button onClick={addCert} className="w-full py-10 border-4 border-dashed rounded-[2rem] text-stone-300 font-bold uppercase tracking-widest hover:border-gold-accent hover:text-gold-accent transition-all">+ Add Document</button>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'product' && (
+          <div className="animate-fade-in max-w-4xl space-y-12">
+             <SectionHeader title="Product & Pricing" desc="Packaging variants and marketplace links." />
+             <div className="space-y-8">
+                {siteContent.product.variants.map((v, i) => (
+                  <div key={v.id} className="p-8 bg-white rounded-[2rem] border border-stone-200 shadow-sm relative group">
+                    <button onClick={() => removeVariant(v.id)} className="absolute top-4 right-4 text-red-400 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-bold">Delete Variant</button>
+                    <div className="grid grid-cols-2 gap-8">
+                       <Field label="Size Label" value={v.size} onChange={val => updateVariant(i, 'size', val)} />
+                       <Field label="Price (IDR)" value={v.priceIdr} onChange={val => updateVariant(i, 'priceIdr', val)} type="number" />
+                       <Field label="Shopee URL" value={v.shopeeLink || ''} onChange={val => updateVariant(i, 'shopeeLink', val)} />
+                       <Field label="TikTok URL" value={v.tiktokLink || ''} onChange={val => updateVariant(i, 'tiktokLink', val)} />
+                    </div>
+                  </div>
+                ))}
+                <button onClick={addVariant} className="w-full py-6 border-2 border-dashed rounded-xl text-stone-300 font-bold">+ Add Variant</button>
+             </div>
           </div>
         )}
 
         {activeTab === 'blog' && (
-          <div className="space-y-8 animate-fade-in">
-            <SectionHeader title="Scientific Journal" subtitle="Educational content and blog management." />
-            {editingPost ? (
-              <div className="bg-white p-10 rounded-[2rem] border border-stone-200 shadow-sm space-y-8">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-xl font-bold serif">Editing: {editingPost.title.en}</h3>
-                  <button onClick={() => setEditingPost(null)} className="text-stone-400 font-bold text-xs uppercase underline">Cancel</button>
+           <div className="animate-fade-in max-w-4xl space-y-8">
+              <SectionHeader title="Blog Journal" desc="Educational content management." />
+              {blogPosts.map(p => (
+                <div key={p.id} className="p-8 bg-white border border-stone-200 rounded-3xl flex justify-between items-center group">
+                   <p className="font-bold text-shilajit-brown">{p.title.en}</p>
+                   <button onClick={() => setBlogPosts(prev => prev.filter(bp => bp.id !== p.id))} className="text-red-400 font-bold uppercase text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">Delete</button>
                 </div>
-                <div className="grid grid-cols-2 gap-6">
-                  <Field label="Title (EN)" value={editingPost.title.en} onChange={(v) => setEditingPost({...editingPost, title: {...editingPost.title, en: v}})} />
-                  <Field label="Title (ID)" value={editingPost.title.id} onChange={(v) => setEditingPost({...editingPost, title: {...editingPost.title, id: v}})} />
-                  <div className="col-span-2">
-                    <Field label="Excerpt (EN)" value={editingPost.excerpt.en} onChange={(v) => setEditingPost({...editingPost, excerpt: {...editingPost.excerpt, en: v}})} type="textarea" />
-                    <Field label="Excerpt (ID)" value={editingPost.excerpt.id} onChange={(v) => setEditingPost({...editingPost, excerpt: {...editingPost.excerpt, id: v}})} type="textarea" />
-                  </div>
-                  <div className="col-span-2">
-                    <Field label="Content HTML (EN)" value={editingPost.content.en} onChange={(v) => setEditingPost({...editingPost, content: {...editingPost.content, en: v}})} type="textarea" />
-                    <Field label="Content HTML (ID)" value={editingPost.content.id} onChange={(v) => setEditingPost({...editingPost, content: {...editingPost.content, id: v}})} type="textarea" />
-                  </div>
-                  <Field label="Cover Image URL" value={editingPost.image} onChange={(v) => setEditingPost({...editingPost, image: v})} />
-                </div>
-                <button onClick={() => { setBlogPosts(p => p.map(bp => bp.id === editingPost.id ? editingPost : bp)); setEditingPost(null); }} className="w-full bg-shilajit-brown text-white py-4 rounded-xl font-bold shadow-lg hover:bg-gold-accent transition-all">Save Post</button>
-              </div>
-            ) : (
-              <div className="bg-white rounded-[2rem] border border-stone-200 shadow-sm overflow-hidden">
-                <table className="w-full text-left">
-                  <thead className="bg-stone-50 border-b border-stone-200">
-                    <tr><th className="px-6 py-4 text-[10px] font-bold uppercase text-stone-400 tracking-[0.2em]">Article</th><th className="px-6 py-4 text-[10px] font-bold uppercase text-stone-400 tracking-[0.2em] text-right">Actions</th></tr>
-                  </thead>
-                  <tbody>
-                    {blogPosts.map(p => (
-                      <tr key={p.id} className="border-b border-stone-50 hover:bg-stone-50 transition-colors">
-                        <td className="px-6 py-4 font-bold text-shilajit-brown">{p.title.en}</td>
-                        <td className="px-6 py-4 text-right">
-                          <button onClick={() => setEditingPost(p)} className="text-gold-accent font-bold text-xs uppercase mr-6">Edit</button>
-                          <button onClick={() => setBlogPosts(prev => prev.filter(bp => bp.id !== p.id))} className="text-red-400 font-bold text-xs uppercase">Delete</button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
+              ))}
+              <p className="text-stone-400 text-xs italic">Full blog post editing is currently read-only in this demo. Contact engineering for advanced CMS integration.</p>
+           </div>
         )}
 
         {activeTab === 'settings' && (
-          <div className="space-y-12 animate-fade-in max-w-4xl">
-            <SectionHeader title="System Settings" subtitle="Configure administrator access and security." />
-            
-            <div className="bg-white p-10 rounded-[2rem] border border-stone-200 shadow-sm space-y-6">
-              <h3 className="text-xl font-bold text-shilajit-brown serif border-b border-stone-100 pb-4">Security</h3>
-              <Field 
-                label="Administrator Password" 
-                value={siteContent.settings.adminPassword} 
-                onChange={(v) => updateContent('settings', 'adminPassword', v)} 
-                type="text"
-              />
-              <p className="text-[10px] text-stone-400 uppercase tracking-widest font-bold">
-                * This password is used to access the Anzil CMS. Keep it secure.
-              </p>
-            </div>
-          </div>
+           <div className="animate-fade-in max-w-4xl space-y-12">
+              <SectionHeader title="Security" desc="Configure access control." />
+              <div className="bg-white p-10 rounded-[2rem] border border-stone-200 shadow-sm">
+                <Field label="Admin Password" value={siteContent.settings.adminPassword} onChange={v => updateContent('settings', 'adminPassword', v)} />
+              </div>
+           </div>
         )}
       </main>
     </div>
   );
 };
-
-const SidebarLink: React.FC<{ active: boolean; onClick: () => void; icon: string; children: React.ReactNode }> = ({ active, onClick, icon, children }) => (
-  <button onClick={onClick} className={`w-full flex items-center space-x-3 px-6 py-4 rounded-xl transition-all ${active ? 'bg-white/10 text-white shadow-inner' : 'text-stone-400 hover:text-white hover:bg-white/5'}`}>
-    <span className="text-xl">{icon}</span><span className="font-bold text-[10px] uppercase tracking-[0.3em]">{children}</span>
-  </button>
-);
 
 export default AdminPanel;

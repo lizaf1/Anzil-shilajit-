@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Benefits from './components/Benefits';
 import ProductFeature from './components/ProductFeature';
+import AIAssistant from './components/AIAssistant';
 import Footer from './components/Footer';
 import CertificatesPage from './components/CertificatesPage';
 import BlogPage from './components/BlogPage';
@@ -19,6 +20,12 @@ export interface ProductVariant {
   priceIdr: number;
   shopeeLink?: string;
   tiktokLink?: string;
+}
+
+export interface CertStat {
+  value: string;
+  labelEn: string;
+  labelId: string;
 }
 
 export interface EditableContent {
@@ -39,6 +46,8 @@ export interface EditableContent {
     image: string;
     quoteEn: string;
     quoteId: string;
+    statAltitude: string;
+    statPotency: string;
   };
   product: {
     titleEn: string;
@@ -56,6 +65,22 @@ export interface EditableContent {
     subtitleId: string;
     items: Array<{ titleEn: string; titleId: string; descEn: string; descId: string }>;
   };
+  aiAssistant: {
+    titleEn: string;
+    titleId: string;
+    descEn: string;
+    descId: string;
+    initialEn: string;
+    initialId: string;
+    placeholderEn: string;
+    placeholderId: string;
+    expertNameEn: string;
+    expertNameId: string;
+    statusEn: string;
+    statusId: string;
+    featuresEn: string[];
+    featuresId: string[];
+  };
   faq: {
     titleEn: string;
     titleId: string;
@@ -66,7 +91,10 @@ export interface EditableContent {
     titleId: string;
     descEn: string;
     descId: string;
+    footerTextEn: string;
+    footerTextId: string;
     items: Array<{ titleEn: string; titleId: string; descEn: string; descId: string; idNum: string; image: string }>;
+    stats: CertStat[];
   };
   settings: {
     adminPassword: string;
@@ -91,6 +119,8 @@ const DEFAULT_CONTENT: EditableContent = {
     image: "https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?auto=format&fit=crop&q=80&w=1000",
     quoteEn: translations.en.intro.quote,
     quoteId: translations.id.intro.quote,
+    statAltitude: "16,000 ft",
+    statPotency: "100% Raw",
   },
   product: {
     titleEn: translations.en.product.sectionTitle,
@@ -117,6 +147,22 @@ const DEFAULT_CONTENT: EditableContent = {
       descId: translations.id.benefits.items?.[i]?.desc || "",
     })),
   },
+  aiAssistant: {
+    titleEn: "Wellness Concierge",
+    titleId: "Konsultan Kesejahteraan",
+    descEn: "Ask our AI expert about dosage, benefits, and the science behind Anzil Himalayan Shilajit.",
+    descId: "Tanyakan kepada ahli AI kami tentang dosis, manfaat, dan sains di balik Anzil Himalayan Shilajit.",
+    initialEn: "Hello! I am your Anzil wellness guide. How can I help you optimize your health with Shilajit today?",
+    initialId: "Halo! Saya panduan kesejahteraan Anzil Anda. Bagaimana saya bisa membantu Anda mengoptimalkan kesehatan Anda dengan Shilajit hari ini?",
+    placeholderEn: "Ask about usage, minerals, or benefits...",
+    placeholderId: "Tanya tentang penggunaan, mineral, atau manfaat...",
+    expertNameEn: "Anzil Expert",
+    expertNameId: "Ahli Anzil",
+    statusEn: "Online | Himalayan Wisdom",
+    statusId: "Online | Kebijaksanaan Himalaya",
+    featuresEn: ["Dosage Guidance", "Mineral Analysis", "Usage Tips"],
+    featuresId: ["Panduan Dosis", "Analisis Mineral", "Tips Penggunaan"],
+  },
   faq: {
     titleEn: translations.en.faq.title,
     titleId: translations.id.faq.title,
@@ -132,19 +178,24 @@ const DEFAULT_CONTENT: EditableContent = {
     titleId: translations.id.certs.title,
     descEn: translations.en.certs.desc,
     descId: translations.id.certs.desc,
-    items: (translations.en.certs.items || []).map((item: any, i: number) => ({
-      titleEn: item.title,
-      titleId: translations.id.certs.items?.[i]?.title || "",
-      descEn: item.desc,
-      descId: translations.id.certs.items?.[i]?.desc || "",
-      idNum: ["MD 867011001541", "Batch #ANZ-2024-08", "FSMS #99210", "Good Manufacturing Practice"][i] || "Cert-ID",
-      image: [
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Logo_BPOM.svg/1200px-Logo_BPOM.svg.png",
-        "https://cdn-icons-png.flaticon.com/512/3209/3209065.png",
-        "https://cdn-icons-png.flaticon.com/512/3501/3501198.png",
-        "https://cdn-icons-png.flaticon.com/512/2855/2855523.png"
-      ][i] || "https://placehold.co/100",
-    })),
+    footerTextEn: "Global Safety Standard Compliant",
+    footerTextId: "Patuh Terhadap Standar Keamanan Global",
+    items: [
+      {
+        titleEn: "BPOM P-IRT Certified",
+        titleId: "Sertifikasi BPOM P-IRT",
+        descEn: "Indonesian Home Industry Food Permit verifying safe production standards.",
+        descId: "Izin P-IRT memastikan standar produksi pangan yang aman.",
+        idNum: "P-IRT 2093275010688-26",
+        image: "https://images.unsplash.com/photo-1633167606207-d840b5070fc2?auto=format&fit=crop&q=80&w=1200"
+      }
+    ],
+    stats: [
+      { value: "65%+", labelEn: "Fulvic Acid", labelId: "Asam Fulvat" },
+      { value: "0.0%", labelEn: "ETO Residue", labelId: "Residu ETO" },
+      { value: "84+", labelEn: "Trace Minerals", labelId: "Mineral Jejak" },
+      { value: "<0.5", labelEn: "Heavy Metals (PPM)", labelId: "Logam Berat (PPM)" }
+    ]
   },
   settings: {
     adminPassword: "admin123"
@@ -169,6 +220,7 @@ const AppContent: React.FC = () => {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
+        // Robust deep merging
         return {
           ...DEFAULT_CONTENT,
           ...parsed,
@@ -176,8 +228,13 @@ const AppContent: React.FC = () => {
           intro: { ...DEFAULT_CONTENT.intro, ...parsed.intro },
           product: { ...DEFAULT_CONTENT.product, ...parsed.product },
           benefits: { ...DEFAULT_CONTENT.benefits, ...parsed.benefits },
+          aiAssistant: { ...DEFAULT_CONTENT.aiAssistant, ...parsed.aiAssistant },
           faq: { ...DEFAULT_CONTENT.faq, ...parsed.faq },
-          certs: { ...DEFAULT_CONTENT.certs, ...parsed.certs },
+          certs: { 
+            ...DEFAULT_CONTENT.certs, 
+            ...parsed.certs,
+            stats: parsed.certs?.stats || DEFAULT_CONTENT.certs.stats 
+          },
           settings: { ...DEFAULT_CONTENT.settings, ...parsed.settings },
         };
       } catch (e) {
@@ -254,11 +311,11 @@ const AppContent: React.FC = () => {
                   </p>
                   <div className="grid grid-cols-2 gap-8 border-t border-stone-100 pt-8">
                     <div>
-                      <h4 className="text-2xl font-bold text-shilajit-brown mb-1 serif">16,000 ft</h4>
+                      <h4 className="text-2xl font-bold text-shilajit-brown mb-1 serif">{siteContent.intro.statAltitude}</h4>
                       <p className="text-stone-400 text-[10px] font-bold uppercase tracking-widest">{t.intro.stats.altitude}</p>
                     </div>
                     <div>
-                      <h4 className="text-2xl font-bold text-shilajit-brown mb-1 serif">100% Raw</h4>
+                      <h4 className="text-2xl font-bold text-shilajit-brown mb-1 serif">{siteContent.intro.statPotency}</h4>
                       <p className="text-stone-400 text-[10px] font-bold uppercase tracking-widest">{t.intro.stats.potency}</p>
                     </div>
                   </div>
@@ -268,6 +325,7 @@ const AppContent: React.FC = () => {
           </section>
 
           <Benefits content={siteContent.benefits} />
+          <AIAssistant content={siteContent.aiAssistant} />
           <ProductFeature content={siteContent.product} />
           
           <section id="faq" className="py-24 bg-white">
