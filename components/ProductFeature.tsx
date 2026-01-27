@@ -2,8 +2,6 @@
 import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
 
-const BPOM_LOGO = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Logo_BPOM.svg/1200px-Logo_BPOM.svg.png";
-
 const ProductFeature: React.FC = () => {
   const { t } = useLanguage();
 
@@ -82,17 +80,7 @@ const ProductFeature: React.FC = () => {
               </div>
             </div>
 
-            <div className="pt-6 border-t border-stone-100 flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="w-14 h-14 bg-white rounded-lg flex items-center justify-center p-1.5 shadow-sm border border-stone-100">
-                  <img 
-                    src={BPOM_LOGO} 
-                    className="max-h-full max-w-full object-contain" 
-                    alt="BPOM Certified Logo" 
-                  />
-                </div>
-                <span className="text-[10px] font-bold text-stone-400 uppercase tracking-[0.2em]">{t.product.batch}</span>
-              </div>
+            <div className="pt-6 border-t border-stone-100 flex items-center justify-end">
               <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest">{t.product.stock}</span>
             </div>
           </div>

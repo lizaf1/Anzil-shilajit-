@@ -15,7 +15,6 @@ type AdminTab = 'dashboard' | 'blog' | 'settings';
 const AdminPanel: React.FC<AdminPanelProps> = ({ onExit, blogPosts, setBlogPosts, isAuthenticated, setAuthenticated }) => {
   const [activeTab, setActiveTab] = useState<AdminTab>('dashboard');
   const [password, setPassword] = useState('');
-  const [isEditing, setIsEditing] = useState<string | null>(null);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,20 +113,19 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onExit, blogPosts, setBlogPosts
               </div>
               <div className="bg-white p-3 rounded-xl border border-stone-200 shadow-sm flex items-center space-x-3">
                 <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
-                <span className="text-xs font-bold text-stone-600 uppercase tracking-widest">API Server Online</span>
+                <span className="text-xs font-bold text-stone-600 uppercase tracking-widest">System Status: Optimal</span>
               </div>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <StatCard title="Product Views" value="12,842" delta="+12%" />
-              <StatCard title="AI Wellness Inquiries" value="843" delta="+24%" />
               <StatCard title="Lead Conversion" value="8.4%" delta="+2%" />
             </div>
 
             <div className="bg-white rounded-[2rem] p-8 border border-stone-200 shadow-sm">
               <h3 className="text-xl font-bold text-shilajit-brown serif mb-6">Regional Interest Map</h3>
               <div className="h-64 bg-stone-50 rounded-2xl flex items-center justify-center text-stone-300 font-bold uppercase tracking-widest text-xs italic">
-                Interactive Geospatial Data Visualisation Hidden in Demo
+                Interactive Geospatial Data Visualisation
               </div>
             </div>
           </div>
@@ -187,18 +185,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onExit, blogPosts, setBlogPosts
           <div className="max-w-2xl space-y-8">
             <h1 className="text-4xl font-bold text-shilajit-brown serif">Site Configurations</h1>
             <div className="space-y-6">
-              <div className="p-6 bg-white border border-stone-200 rounded-2xl shadow-sm">
-                <h4 className="font-bold text-shilajit-brown mb-4">Gemini AI Configuration</h4>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-stone-500">Active Model</span>
-                  <span className="font-mono text-gold-accent bg-gold-accent/5 px-2 py-0.5 rounded">gemini-3-flash-preview</span>
-                </div>
-                <div className="mt-4 pt-4 border-t border-stone-100 flex items-center justify-between text-sm">
-                  <span className="text-stone-500">API Key Status</span>
-                  <span className="text-green-600 font-bold uppercase text-[10px] tracking-widest">Active & Verified</span>
-                </div>
-              </div>
-
               <div className="p-6 bg-white border border-stone-200 rounded-2xl shadow-sm">
                 <h4 className="font-bold text-shilajit-brown mb-4">Store Integration</h4>
                 <div className="space-y-4">

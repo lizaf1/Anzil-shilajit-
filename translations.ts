@@ -68,15 +68,6 @@ export const translations = {
         }
       ]
     },
-    ai: {
-      title: "Ask Our AI Wellness Expert",
-      desc: "Confused about dosage? Wondering if Shilajit is right for you? Our AI expert is trained on the latest research and specific benefits of Anzil's premium resin.",
-      features: ["Instant Expert Guidance", "Personalized Usage Advice"],
-      expertName: "Anzil Wellness AI",
-      status: "Always Active",
-      placeholder: "Ask a question...",
-      initial: "Hello! I am your Anzil Wellness Expert. Ask me anything about Himalayan Shilajit!"
-    },
     product: {
       bestseller: "Premium Grade",
       name: "Anzil Authentic Resin",
@@ -115,7 +106,7 @@ export const translations = {
           desc: "Official certification from the Indonesian Food and Drug Authority, ensuring safety and compliance with national health standards."
         },
         {
-          title: "COA (Certificate of Analysis)",
+          title: "COA (Sertifikat Analisis)",
           desc: "Detailed chemical analysis confirming 65% Fulvic Acid content and absence of harmful heavy metals (Lead, Mercury, Arsenic)."
         },
         {
@@ -210,15 +201,6 @@ export const translations = {
           desc: "Sifat antioksidan yang kuat melawan radikal bebas dan kerusakan sel, mempromosikan umur panjang dan kulit yang bercahaya."
         }
       ]
-    },
-    ai: {
-      title: "Tanya Ahli Kesehatan AI Kami",
-      desc: "Bingung tentang dosis? Ingin tahu apakah Shilajit tepat untuk Anda? Ahli AI kami dilatih pada penelitian terbaru dan manfaat spesifik dari resin premium Anzil.",
-      features: ["Panduan Ahli Instan", "Saran Penggunaan Personalisasi"],
-      expertName: "AI Kesehatan Anzil",
-      status: "Selalu Aktif",
-      placeholder: "Ajukan pertanyaan...",
-      initial: "Halo! Saya adalah Ahli Kesehatan Anzil Anda. Tanya saya apa saja tentang Himalayan Shilajit!"
     },
     product: {
       bestseller: "Kelas Premium",

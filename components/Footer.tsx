@@ -2,8 +2,6 @@
 import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
 
-const BPOM_LOGO = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Logo_BPOM.svg/1200px-Logo_BPOM.svg.png";
-
 interface FooterProps {
   onAdminClick?: () => void;
 }
@@ -28,18 +26,6 @@ const Footer: React.FC<FooterProps> = ({ onAdminClick }) => {
                 <a href="https://wa.me/6281234567890" target="_blank" className="w-10 h-10 rounded-full border border-stone-700 flex items-center justify-center hover:bg-gold-accent hover:border-gold-accent transition-all hover:text-white">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.539 2.016 2.069-.53c.961.547 1.916.946 3.22.947h.002c3.18 0 5.766-2.586 5.767-5.766 0-3.18-2.586-5.77-5.77-5.77zm3.367 8.24c-.149.42-.76.772-1.049.815-.29.043-.647.075-1.049-.056-.254-.082-.579-.199-1.012-.387-1.85-.805-3.044-2.69-3.136-2.812-.092-.122-.746-.992-.746-1.87 0-.878.458-1.31.621-1.492.164-.182.358-.228.477-.228.119 0 .239.001.343.006.108.005.253-.041.396.3.149.356.508 1.239.553 1.331.045.091.075.197.015.318-.06.121-.09.197-.18.303-.09.106-.188.236-.269.319-.09.091-.184.19-.079.371.106.182.471.777 1.012 1.258.697.621 1.284.815 1.466.906.182.091.289.076.396-.046.106-.122.457-.531.579-.714.122-.182.244-.152.41-.091.164.061 1.044.492 1.226.583.182.091.303.137.346.213.045.076.045.441-.104.86z"/></svg>
                 </a>
-              </div>
-              <div className="bg-white/5 p-3 rounded-2xl flex items-center space-x-4 border border-white/10 group hover:border-gold-accent transition-all">
-                <div className="w-12 h-12 bg-white rounded-lg p-1 flex items-center justify-center">
-                  <img 
-                    src={BPOM_LOGO} 
-                    className="max-h-full max-w-full object-contain" 
-                    alt="Official BPOM" 
-                  />
-                </div>
-                <div className="text-[10px] font-bold text-white/40 leading-tight tracking-[0.1em] uppercase group-hover:text-white transition-colors">
-                  BPOM RI<br/>CERTIFIED PRODUCT
-                </div>
               </div>
             </div>
           </div>

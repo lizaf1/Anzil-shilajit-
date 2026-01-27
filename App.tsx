@@ -4,7 +4,6 @@ import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Benefits from './components/Benefits';
-import AIAssistant from './components/AIAssistant';
 import ProductFeature from './components/ProductFeature';
 import Footer from './components/Footer';
 import CertificatesPage from './components/CertificatesPage';
@@ -98,7 +97,6 @@ const AppContent: React.FC = () => {
           </section>
 
           <Benefits />
-          <AIAssistant />
           <ProductFeature />
 
           <section id="faq" className="py-24 bg-white">
