@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import Navbar from './components/Navbar';
@@ -10,7 +9,6 @@ import CertificatesPage from './components/CertificatesPage';
 import BlogPage from './components/BlogPage';
 import BlogPostPage from './components/BlogPostPage';
 import AdminPanel from './components/AdminPanel';
-import AIAssistant from './components/AIAssistant';
 import { blogPosts as initialBlogPosts } from './data/blog-posts';
 import { translations } from './translations';
 
@@ -68,22 +66,6 @@ export interface EditableContent {
     descEn: string;
     descId: string;
     items: Array<{ titleEn: string; titleId: string; descEn: string; descId: string; idNum: string; image: string }>;
-  };
-  ai: {
-    titleEn: string;
-    titleId: string;
-    descEn: string;
-    descId: string;
-    initialEn: string;
-    initialId: string;
-    placeholderEn: string;
-    placeholderId: string;
-    expertNameEn: string;
-    expertNameId: string;
-    statusEn: string;
-    statusId: string;
-    featuresEn: string[];
-    featuresId: string[];
   };
 }
 
@@ -161,22 +143,6 @@ const DEFAULT_CONTENT: EditableContent = {
         "https://cdn-icons-png.flaticon.com/512/2855/2855523.png"
       ][i] || "https://placehold.co/100",
     })),
-  },
-  ai: {
-    titleEn: translations.en.ai.title,
-    titleId: translations.id.ai.title,
-    descEn: translations.en.ai.desc,
-    descId: translations.id.ai.desc,
-    initialEn: translations.en.ai.initial,
-    initialId: translations.id.ai.initial,
-    placeholderEn: translations.en.ai.placeholder,
-    placeholderId: translations.id.ai.placeholder,
-    expertNameEn: translations.en.ai.expertName,
-    expertNameId: translations.id.ai.expertName,
-    statusEn: translations.en.ai.status,
-    statusId: translations.id.ai.status,
-    featuresEn: translations.en.ai.features,
-    featuresId: translations.id.ai.features,
   }
 };
 
@@ -198,7 +164,6 @@ const AppContent: React.FC = () => {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // Deep merge logic with fallback to DEFAULT_CONTENT for new fields
         return {
           ...DEFAULT_CONTENT,
           ...parsed,
@@ -208,7 +173,6 @@ const AppContent: React.FC = () => {
           benefits: { ...DEFAULT_CONTENT.benefits, ...parsed.benefits },
           faq: { ...DEFAULT_CONTENT.faq, ...parsed.faq },
           certs: { ...DEFAULT_CONTENT.certs, ...parsed.certs },
-          ai: { ...DEFAULT_CONTENT.ai, ...parsed.ai },
         };
       } catch (e) {
         console.error("Failed to parse site content", e);
@@ -300,8 +264,6 @@ const AppContent: React.FC = () => {
           <Benefits content={siteContent.benefits} />
           <ProductFeature content={siteContent.product} />
           
-          <AIAssistant content={siteContent.ai} />
-
           <section id="faq" className="py-24 bg-white">
             <div className="container mx-auto px-6">
               <h2 className="text-4xl font-bold text-center text-shilajit-brown mb-16 serif">

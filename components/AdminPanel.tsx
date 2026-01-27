@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { BlogPost } from '../types';
 import { EditableContent, ProductVariant } from '../App';
@@ -13,7 +12,7 @@ interface AdminPanelProps {
   setAuthenticated: (val: boolean) => void;
 }
 
-type AdminTab = 'dashboard' | 'hero' | 'intro' | 'benefits' | 'faq' | 'certs' | 'product' | 'ai' | 'blog';
+type AdminTab = 'dashboard' | 'hero' | 'intro' | 'benefits' | 'faq' | 'certs' | 'product' | 'blog';
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ 
   onExit, 
@@ -120,7 +119,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
 
   return (
     <div className="min-h-screen bg-stone-50 flex">
-      {/* Sidebar */}
       <aside className="w-64 bg-shilajit-brown text-white flex flex-col sticky top-0 h-screen overflow-y-auto">
         <div className="p-8 text-center border-b border-white/5">
           <h2 className="text-2xl font-bold serif">ANZIL CMS</h2>
@@ -133,9 +131,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
           <SidebarLink active={activeTab === 'benefits'} onClick={() => setActiveTab('benefits')} icon="✨">Benefits</SidebarLink>
           <SidebarLink active={activeTab === 'faq'} onClick={() => setActiveTab('faq')} icon="❓">FAQ</SidebarLink>
           <SidebarLink active={activeTab === 'certs'} onClick={() => setActiveTab('certs')} icon="📜">Certificates</SidebarLink>
-          <div className="pt-4 pb-2 px-4 text-[10px] font-bold text-stone-500 uppercase tracking-widest">Shop & Tools</div>
+          <div className="pt-4 pb-2 px-4 text-[10px] font-bold text-stone-500 uppercase tracking-widest">Shop & Blog</div>
           <SidebarLink active={activeTab === 'product'} onClick={() => setActiveTab('product')} icon="🛒">Product & Prices</SidebarLink>
-          <SidebarLink active={activeTab === 'ai'} onClick={() => setActiveTab('ai')} icon="🤖">AI Assistant</SidebarLink>
           <SidebarLink active={activeTab === 'blog'} onClick={() => setActiveTab('blog')} icon="✍️">Blog Journal</SidebarLink>
         </nav>
         <button onClick={onExit} className="m-4 p-3 rounded-xl bg-white/5 text-stone-400 text-xs font-bold uppercase hover:bg-white/10 transition-all">← Back to Site</button>
@@ -182,36 +179,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
           </div>
         )}
 
-        {activeTab === 'ai' && (
-          <div className="space-y-12 animate-fade-in max-w-4xl">
-            <SectionHeader title="AI Wellness Assistant" subtitle="Manage the persona and instructions for the wellness bot." />
-            <div className="grid grid-cols-2 gap-8">
-              <Field label="Bot Title (EN)" value={siteContent.ai.titleEn} onChange={(v) => updateContent('ai', 'titleEn', v)} />
-              <Field label="Bot Title (ID)" value={siteContent.ai.titleId} onChange={(v) => updateContent('ai', 'titleId', v)} />
-              
-              <Field label="Expert Name (EN)" value={siteContent.ai.expertNameEn} onChange={(v) => updateContent('ai', 'expertNameEn', v)} />
-              <Field label="Expert Name (ID)" value={siteContent.ai.expertNameId} onChange={(v) => updateContent('ai', 'expertNameId', v)} />
-
-              <Field label="Status Text (EN)" value={siteContent.ai.statusEn} onChange={(v) => updateContent('ai', 'statusEn', v)} />
-              <Field label="Status Text (ID)" value={siteContent.ai.statusId} onChange={(v) => updateContent('ai', 'statusId', v)} />
-
-              <div className="col-span-2">
-                <Field label="Initial Message (EN)" value={siteContent.ai.initialEn} onChange={(v) => updateContent('ai', 'initialEn', v)} type="textarea" />
-                <Field label="Initial Message (ID)" value={siteContent.ai.initialId} onChange={(v) => updateContent('ai', 'initialId', v)} type="textarea" />
-              </div>
-
-              <div className="col-span-2">
-                <Field label="Description Text (EN)" value={siteContent.ai.descEn} onChange={(v) => updateContent('ai', 'descEn', v)} type="textarea" />
-                <Field label="Description Text (ID)" value={siteContent.ai.descId} onChange={(v) => updateContent('ai', 'descId', v)} type="textarea" />
-              </div>
-
-              <Field label="Input Placeholder (EN)" value={siteContent.ai.placeholderEn} onChange={(v) => updateContent('ai', 'placeholderEn', v)} />
-              <Field label="Input Placeholder (ID)" value={siteContent.ai.placeholderId} onChange={(v) => updateContent('ai', 'placeholderId', v)} />
-            </div>
-          </div>
-        )}
-
-        {/* Other tabs remain largely the same, logic preserved */}
         {activeTab === 'product' && (
           <div className="space-y-12 animate-fade-in max-w-4xl">
             <SectionHeader title="Product & Pricing (IDR)" subtitle="Manage packaging sizes and Indonesian Rupiah pricing." />

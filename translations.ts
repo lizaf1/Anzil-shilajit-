@@ -1,4 +1,3 @@
-
 export const translations = {
   en: {
     nav: {
@@ -124,15 +123,6 @@ export const translations = {
         "Mineral density profiling via ICP-MS technology.",
         "Fulvic and Humic acid concentration verification."
       ]
-    },
-    ai: {
-      title: "AI Wellness Assistant",
-      desc: "Ask anything about Shilajit, dosage, or how it can help your health goals.",
-      initial: "Hello! I am Anzil's AI wellness expert. How can I assist you on your health journey today?",
-      placeholder: "Ask about shilajit benefits...",
-      expertName: "Anzil Expert",
-      status: "Online & Ready",
-      features: ["Purity Info", "Dosage Guide", "Science Facts"]
     },
     footer: {
       mission: "At Anzil, we are dedicated to bringing you the purest Himalayan Shilajit. Our mission is to help you unlock your full potential using nature's most potent wisdom.",
@@ -267,15 +257,6 @@ export const translations = {
         "Profil kepadatan mineral melalui teknologi ICP-MS.",
         "Verifikasi konsentrasi asam Fulvat dan Humat."
       ]
-    },
-    ai: {
-      title: "Asisten Kebugaran AI",
-      desc: "Tanyakan apa saja tentang Shilajit, dosis, atau bagaimana ia dapat membantu tujuan kesehatan Anda.",
-      initial: "Halo! Saya pakar kebugaran AI Anzil. Bagaimana saya dapat membantu perjalanan kesehatan Anda hari ini?",
-      placeholder: "Tanya tentang manfaat shilajit...",
-      expertName: "Pakar Anzil",
-      status: "Online & Siap",
-      features: ["Info Kemurnian", "Panduan Dosis", "Fakta Ilmiah"]
     },
     footer: {
       mission: "Di Anzil, kami berdedikasi untuk membawakan Anda Himalayan Shilajit termurni. Misi kami adalah membantu Anda membuka potensi penuh Anda menggunakan kebijaksanaan alam yang paling kuat.",
