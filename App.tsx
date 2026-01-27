@@ -10,10 +10,16 @@ import CertificatesPage from './components/CertificatesPage';
 import BlogPage from './components/BlogPage';
 import BlogPostPage from './components/BlogPostPage';
 import AdminPanel from './components/AdminPanel';
+import AIAssistant from './components/AIAssistant';
 import { blogPosts as initialBlogPosts } from './data/blog-posts';
 import { translations } from './translations';
 
-// Define the structure for all editable content
+export interface ProductVariant {
+  id: string;
+  size: string;
+  priceIdr: number;
+}
+
 export interface EditableContent {
   hero: {
     titleEn: string;
@@ -34,7 +40,6 @@ export interface EditableContent {
     quoteId: string;
   };
   product: {
-    price: string;
     titleEn: string;
     titleId: string;
     descEn: string;
@@ -43,6 +48,7 @@ export interface EditableContent {
     whatsapp: string;
     shopee: string;
     tiktok: string;
+    variants: ProductVariant[];
   };
   benefits: {
     titleEn: string;
@@ -85,7 +91,6 @@ const DEFAULT_CONTENT: EditableContent = {
     quoteId: translations.id.intro.quote,
   },
   product: {
-    price: "49.99",
     titleEn: translations.en.product.sectionTitle,
     titleId: translations.id.product.sectionTitle,
     descEn: translations.en.product.desc,
@@ -94,27 +99,32 @@ const DEFAULT_CONTENT: EditableContent = {
     whatsapp: "6281234567890",
     shopee: "https://shopee.co.id/anzil_official",
     tiktok: "https://www.tiktok.com/@anzil_wellness",
+    variants: [
+      { id: '1', size: '15 Grams', priceIdr: 250000 },
+      { id: '2', size: '30 Grams', priceIdr: 450000 },
+      { id: '3', size: '50 Grams', priceIdr: 700000 },
+    ],
   },
   benefits: {
     titleEn: translations.en.benefits.title,
     titleId: translations.id.benefits.title,
     subtitleEn: translations.en.benefits.subtitle,
     subtitleId: translations.id.benefits.subtitle,
-    items: translations.en.benefits.items.map((item: any, i: number) => ({
+    items: (translations.en.benefits.items || []).map((item: any, i: number) => ({
       titleEn: item.title,
-      titleId: translations.id.benefits.items[i].title,
+      titleId: translations.id.benefits.items?.[i]?.title || "",
       descEn: item.desc,
-      descId: translations.id.benefits.items[i].desc,
+      descId: translations.id.benefits.items?.[i]?.desc || "",
     })),
   },
   faq: {
     titleEn: translations.en.faq.title,
     titleId: translations.id.faq.title,
-    items: translations.en.faq.items.map((item: any, i: number) => ({
+    items: (translations.en.faq.items || []).map((item: any, i: number) => ({
       qEn: item.q,
-      qId: translations.id.faq.items[i].q,
+      qId: translations.id.faq.items?.[i]?.q || "",
       aEn: item.a,
-      aId: translations.id.faq.items[i].a,
+      aId: translations.id.faq.items?.[i]?.a || "",
     })),
   },
   certs: {
@@ -122,18 +132,18 @@ const DEFAULT_CONTENT: EditableContent = {
     titleId: translations.id.certs.title,
     descEn: translations.en.certs.desc,
     descId: translations.id.certs.desc,
-    items: translations.en.certs.items.map((item: any, i: number) => ({
+    items: (translations.en.certs.items || []).map((item: any, i: number) => ({
       titleEn: item.title,
-      titleId: translations.id.certs.items[i].title,
+      titleId: translations.id.certs.items?.[i]?.title || "",
       descEn: item.desc,
-      descId: translations.id.certs.items[i].desc,
-      idNum: ["MD 867011001541", "Batch #ANZ-2024-08", "FSMS #99210", "Good Manufacturing Practice"][i],
+      descId: translations.id.certs.items?.[i]?.desc || "",
+      idNum: ["MD 867011001541", "Batch #ANZ-2024-08", "FSMS #99210", "Good Manufacturing Practice"][i] || "Cert-ID",
       image: [
         "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Logo_BPOM.svg/1200px-Logo_BPOM.svg.png",
         "https://cdn-icons-png.flaticon.com/512/3209/3209065.png",
         "https://cdn-icons-png.flaticon.com/512/3501/3501198.png",
         "https://cdn-icons-png.flaticon.com/512/2855/2855523.png"
-      ][i],
+      ][i] || "https://placehold.co/100",
     })),
   },
 };
@@ -237,6 +247,8 @@ const AppContent: React.FC = () => {
 
           <Benefits content={siteContent.benefits} />
           <ProductFeature content={siteContent.product} />
+          
+          <AIAssistant />
 
           <section id="faq" className="py-24 bg-white">
             <div className="container mx-auto px-6">
