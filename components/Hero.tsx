@@ -2,8 +2,15 @@
 import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
 
-const Hero: React.FC = () => {
-  const { t } = useLanguage();
+interface HeroProps {
+  customTitleEn?: string;
+  customTitleId?: string;
+}
+
+const Hero: React.FC<HeroProps> = ({ customTitleEn, customTitleId }) => {
+  const { language, t } = useLanguage();
+
+  const displayPrefix = language === 'en' ? (customTitleEn || t.hero.title) : (customTitleId || t.hero.title);
 
   return (
     <section className="relative h-screen flex items-center overflow-hidden">
@@ -22,7 +29,7 @@ const Hero: React.FC = () => {
             {t.hero.subtitle}
           </span>
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight serif">
-            {t.hero.title} <br />
+            {displayPrefix} <br />
             <span className="text-gold-accent">{t.hero.titleAccent}</span>
           </h1>
           <p className="text-xl md:text-2xl mb-8 text-stone-200 leading-relaxed font-light">

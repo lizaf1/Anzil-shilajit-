@@ -1,8 +1,13 @@
 
 import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { SiteSettings } from '../App';
 
-const ProductFeature: React.FC = () => {
+interface ProductFeatureProps {
+  settings: SiteSettings;
+}
+
+const ProductFeature: React.FC<ProductFeatureProps> = ({ settings }) => {
   const { t } = useLanguage();
 
   return (
@@ -37,7 +42,7 @@ const ProductFeature: React.FC = () => {
                   <span className="text-stone-400 text-xs font-semibold tracking-wider uppercase">{t.product.reviews}</span>
                 </div>
               </div>
-              <div className="text-3xl font-bold text-shilajit-brown">$49.99</div>
+              <div className="text-3xl font-bold text-shilajit-brown">${settings.price}</div>
             </div>
 
             <p className="text-stone-600 mb-8 leading-relaxed">
@@ -46,7 +51,7 @@ const ProductFeature: React.FC = () => {
 
             <div className="grid grid-cols-1 gap-4 mb-10">
               <a 
-                href="https://wa.me/6281234567890"
+                href={`https://wa.me/${settings.whatsapp}`}
                 target="_blank"
                 className="flex items-center justify-between p-4 rounded-2xl border border-stone-200 bg-white hover:border-gold-accent hover:shadow-md transition-all group"
               >
@@ -64,16 +69,16 @@ const ProductFeature: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <a 
-                  href="https://shopee.co.id/anzil_official"
+                  href={settings.shopee}
                   target="_blank"
-                  className="flex items-center justify-center space-x-2 p-4 rounded-2xl border border-stone-200 bg-white hover:border-orange-200 transition-all group"
+                  className="flex items-center justify-center space-x-2 p-4 rounded-2xl border border-stone-200 bg-white hover:border-orange-200 transition-all group text-center"
                 >
                   <span className="font-bold text-stone-800 text-sm">{t.product.channels.shopee}</span>
                 </a>
                 <a 
-                  href="https://www.tiktok.com/@anzil_wellness"
+                  href={settings.tiktok}
                   target="_blank"
-                  className="flex items-center justify-center space-x-2 p-4 rounded-2xl border border-stone-200 bg-white hover:border-stone-900 transition-all group"
+                  className="flex items-center justify-center space-x-2 p-4 rounded-2xl border border-stone-200 bg-white hover:border-stone-900 transition-all group text-center"
                 >
                   <span className="font-bold text-stone-800 text-sm">{t.product.channels.tiktok}</span>
                 </a>

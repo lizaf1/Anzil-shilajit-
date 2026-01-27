@@ -12,14 +12,52 @@ import BlogPostPage from './components/BlogPostPage';
 import AdminPanel from './components/AdminPanel';
 import { blogPosts as initialBlogPosts } from './data/blog-posts';
 
+export interface SiteSettings {
+  whatsapp: string;
+  shopee: string;
+  tiktok: string;
+  price: string;
+  heroTitleEn: string;
+  heroTitleId: string;
+}
+
+const DEFAULT_SETTINGS: SiteSettings = {
+  whatsapp: '6281234567890',
+  shopee: 'https://shopee.co.id/anzil_official',
+  tiktok: 'https://www.tiktok.com/@anzil_wellness',
+  price: '49.99',
+  heroTitleEn: 'The Gold of the',
+  heroTitleId: 'Emas dari'
+};
+
 type Page = 'home' | 'certificates' | 'blog' | 'blog-post' | 'admin';
 
 const AppContent: React.FC = () => {
   const { t } = useLanguage();
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
-  const [blogPosts, setBlogPosts] = useState(initialBlogPosts);
+  
+  // Persistence for Blog Posts
+  const [blogPosts, setBlogPosts] = useState(() => {
+    const saved = localStorage.getItem('anzil_blog_posts');
+    return saved ? JSON.parse(saved) : initialBlogPosts;
+  });
+
+  // Persistence for Site Settings
+  const [siteSettings, setSiteSettings] = useState<SiteSettings>(() => {
+    const saved = localStorage.getItem('anzil_site_settings');
+    return saved ? JSON.parse(saved) : DEFAULT_SETTINGS;
+  });
+
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem('anzil_blog_posts', JSON.stringify(blogPosts));
+  }, [blogPosts]);
+
+  useEffect(() => {
+    localStorage.setItem('anzil_site_settings', JSON.stringify(siteSettings));
+  }, [siteSettings]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -37,15 +75,16 @@ const AppContent: React.FC = () => {
     setCurrentPage('blog-post');
   };
 
-  const selectedPost = selectedPostId ? blogPosts.find(p => p.id === selectedPostId) : null;
+  const selectedPost = selectedPostId ? blogPosts.find((p: any) => p.id === selectedPostId) : null;
 
-  // Render Admin separately to avoid wrapping in public Navbar/Footer
   if (currentPage === 'admin') {
     return (
       <AdminPanel 
         onExit={() => navigateTo('home')} 
         blogPosts={blogPosts} 
         setBlogPosts={setBlogPosts}
+        siteSettings={siteSettings}
+        setSiteSettings={setSiteSettings}
         isAuthenticated={isAdminAuthenticated}
         setAuthenticated={setIsAdminAuthenticated}
       />
@@ -58,7 +97,7 @@ const AppContent: React.FC = () => {
       
       {currentPage === 'home' && (
         <main>
-          <Hero />
+          <Hero customTitleEn={siteSettings.heroTitleEn} customTitleId={siteSettings.heroTitleId} />
           
           <section className="py-24 bg-white">
             <div className="container mx-auto px-6">
@@ -97,7 +136,7 @@ const AppContent: React.FC = () => {
           </section>
 
           <Benefits />
-          <ProductFeature />
+          <ProductFeature settings={siteSettings} />
 
           <section id="faq" className="py-24 bg-white">
             <div className="container mx-auto px-6">
@@ -130,7 +169,7 @@ const AppContent: React.FC = () => {
         <BlogPostPage post={selectedPost} onBack={() => navigateTo('blog')} />
       )}
 
-      <Footer onAdminClick={() => navigateTo('admin')} />
+      <Footer settings={siteSettings} onAdminClick={() => navigateTo('admin')} />
       
       <div className="md:hidden fixed bottom-6 left-6 right-6 z-50">
         <a href="#shop" className="bg-shilajit-brown text-white w-full py-4 rounded-full text-center font-bold shadow-2xl block border border-white/10 backdrop-blur-sm">
