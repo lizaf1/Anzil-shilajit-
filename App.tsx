@@ -10,14 +10,17 @@ import Footer from './components/Footer';
 import CertificatesPage from './components/CertificatesPage';
 import BlogPage from './components/BlogPage';
 import BlogPostPage from './components/BlogPostPage';
-import { blogPosts } from './data/blog-posts';
+import AdminPanel from './components/AdminPanel';
+import { blogPosts as initialBlogPosts } from './data/blog-posts';
 
-type Page = 'home' | 'certificates' | 'blog' | 'blog-post';
+type Page = 'home' | 'certificates' | 'blog' | 'blog-post' | 'admin';
 
 const AppContent: React.FC = () => {
   const { t } = useLanguage();
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [blogPosts, setBlogPosts] = useState(initialBlogPosts);
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -36,6 +39,19 @@ const AppContent: React.FC = () => {
   };
 
   const selectedPost = selectedPostId ? blogPosts.find(p => p.id === selectedPostId) : null;
+
+  // Render Admin separately to avoid wrapping in public Navbar/Footer
+  if (currentPage === 'admin') {
+    return (
+      <AdminPanel 
+        onExit={() => navigateTo('home')} 
+        blogPosts={blogPosts} 
+        setBlogPosts={setBlogPosts}
+        isAuthenticated={isAdminAuthenticated}
+        setAuthenticated={setIsAdminAuthenticated}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen">
@@ -109,14 +125,14 @@ const AppContent: React.FC = () => {
       )}
 
       {currentPage === 'blog' && (
-        <BlogPage onPostSelect={handlePostSelect} />
+        <BlogPage onPostSelect={handlePostSelect} posts={blogPosts} />
       )}
 
       {currentPage === 'blog-post' && selectedPost && (
         <BlogPostPage post={selectedPost} onBack={() => navigateTo('blog')} />
       )}
 
-      <Footer />
+      <Footer onAdminClick={() => navigateTo('admin')} />
       
       <div className="md:hidden fixed bottom-6 left-6 right-6 z-50">
         <a href="#shop" className="bg-shilajit-brown text-white w-full py-4 rounded-full text-center font-bold shadow-2xl block border border-white/10 backdrop-blur-sm">

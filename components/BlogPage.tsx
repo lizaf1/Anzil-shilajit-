@@ -1,13 +1,14 @@
 
 import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { blogPosts } from '../data/blog-posts';
+import { BlogPost } from '../types';
 
 interface BlogPageProps {
   onPostSelect: (postId: string) => void;
+  posts: BlogPost[];
 }
 
-const BlogPage: React.FC<BlogPageProps> = ({ onPostSelect }) => {
+const BlogPage: React.FC<BlogPageProps> = ({ onPostSelect, posts }) => {
   const { language, t } = useLanguage();
 
   return (
@@ -21,7 +22,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ onPostSelect }) => {
         </header>
 
         <div className="grid md:grid-cols-2 gap-12">
-          {blogPosts.map((post) => (
+          {posts.map((post) => (
             <article 
               key={post.id} 
               className="bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all border border-stone-200 cursor-pointer group flex flex-col h-full"

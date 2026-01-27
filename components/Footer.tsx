@@ -4,7 +4,11 @@ import { useLanguage } from '../context/LanguageContext';
 
 const BPOM_LOGO = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Logo_BPOM.svg/1200px-Logo_BPOM.svg.png";
 
-const Footer: React.FC = () => {
+interface FooterProps {
+  onAdminClick?: () => void;
+}
+
+const Footer: React.FC<FooterProps> = ({ onAdminClick }) => {
   const { t } = useLanguage();
 
   return (
@@ -62,9 +66,19 @@ const Footer: React.FC = () => {
         
         <div className="pt-12 border-t border-stone-800 flex flex-col md:flex-row justify-between items-center text-xs">
           <p>© 2024 Anzil Himalayan Wellness. {t.footer.rights}</p>
-          <p className="mt-4 md:mt-0 max-w-lg text-center md:text-right">
-            {t.footer.disclaimer}
-          </p>
+          <div className="flex items-center space-x-6 mt-4 md:mt-0">
+            <p className="max-w-lg text-center md:text-right">
+              {t.footer.disclaimer}
+            </p>
+            {onAdminClick && (
+              <button 
+                onClick={onAdminClick}
+                className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-20 hover:opacity-100 transition-opacity cursor-pointer p-2"
+              >
+                ADMIN
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </footer>
