@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { BlogPost } from '../types';
 import { EditableContent, ProductVariant, CertStat } from '../App';
+// Import useLanguage to access current language state
+import { useLanguage } from '../context/LanguageContext';
 
 interface AdminPanelProps {
   onExit: () => void;
@@ -24,9 +26,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
   isAuthenticated, 
   setAuthenticated 
 }) => {
+  // Access the current language for localized strings
+  const { language } = useLanguage();
   const [activeTab, setActiveTab] = useState<AdminTab>('dashboard');
   const [passwordInput, setPasswordInput] = useState('');
-  const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -221,6 +224,109 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
           </div>
         )}
 
+        {activeTab === 'benefits' && (
+          <div className="animate-fade-in max-w-4xl space-y-10 md:space-y-12">
+            <SectionHeader title="Benefits Section" desc="Edit the 4 core value propositions." />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+              <Field label="Section Title (EN)" value={siteContent.benefits.titleEn} onChange={v => updateContent('benefits', 'titleEn', v)} />
+              <Field label="Section Title (ID)" value={siteContent.benefits.titleId} onChange={v => updateContent('benefits', 'titleId', v)} />
+              <div className="md:col-span-2">
+                <Field label="Subtitle (EN)" value={siteContent.benefits.subtitleEn} onChange={v => updateContent('benefits', 'subtitleEn', v)} type="textarea" />
+                <Field label="Subtitle (ID)" value={siteContent.benefits.subtitleId} onChange={v => updateContent('benefits', 'subtitleId', v)} type="textarea" />
+              </div>
+            </div>
+            <div className="space-y-8">
+              {siteContent.benefits.items.map((item, i) => (
+                <div key={i} className="p-8 bg-white rounded-[2rem] border border-stone-200 shadow-sm space-y-4">
+                  <h3 className="font-bold text-gold-accent uppercase text-[10px]">Benefit #{i+1}</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Field label="Title (EN)" value={item.titleEn} onChange={v => updateNestedContent('benefits', i, 'titleEn', v)} />
+                    <Field label="Title (ID)" value={item.titleId} onChange={v => updateNestedContent('benefits', i, 'titleId', v)} />
+                  </div>
+                  <Field label="Description (EN)" value={item.descEn} onChange={v => updateNestedContent('benefits', i, 'descEn', v)} type="textarea" />
+                  <Field label="Description (ID)" value={item.descId} onChange={v => updateNestedContent('benefits', i, 'descId', v)} type="textarea" />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'faq' && (
+          <div className="animate-fade-in max-w-4xl space-y-10 md:space-y-12">
+            <SectionHeader title="FAQ Section" desc="Manage commonly asked questions." />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+              <Field label="Section Title (EN)" value={siteContent.faq.titleEn} onChange={v => updateContent('faq', 'titleEn', v)} />
+              <Field label="Section Title (ID)" value={siteContent.faq.titleId} onChange={v => updateContent('faq', 'titleId', v)} />
+            </div>
+            <div className="space-y-8">
+              {siteContent.faq.items.map((item, i) => (
+                <div key={i} className="p-8 bg-white rounded-[2rem] border border-stone-200 shadow-sm space-y-4">
+                  <h3 className="font-bold text-gold-accent uppercase text-[10px]">Question #{i+1}</h3>
+                  <Field label="Question (EN)" value={item.qEn} onChange={v => updateNestedContent('faq', i, 'qEn', v)} />
+                  <Field label="Question (ID)" value={item.qId} onChange={v => updateNestedContent('faq', i, 'qId', v)} />
+                  <Field label="Answer (EN)" value={item.aEn} onChange={v => updateNestedContent('faq', i, 'aEn', v)} type="textarea" />
+                  <Field label="Answer (ID)" value={item.aId} onChange={v => updateNestedContent('faq', i, 'aId', v)} type="textarea" />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'certs' && (
+          <div className="animate-fade-in max-w-4xl space-y-10 md:space-y-12">
+            <SectionHeader title="Certificates & Quality" desc="Lab results and technical data." />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+              <Field label="Page Title (EN)" value={siteContent.certs.titleEn} onChange={v => updateContent('certs', 'titleEn', v)} />
+              <Field label="Page Title (ID)" value={siteContent.certs.titleId} onChange={v => updateContent('certs', 'titleId', v)} />
+              <div className="md:col-span-2">
+                <Field label="Description (EN)" value={siteContent.certs.descEn} onChange={v => updateContent('certs', 'descEn', v)} type="textarea" />
+                <Field label="Description (ID)" value={siteContent.certs.descId} onChange={v => updateContent('certs', 'descId', v)} type="textarea" />
+              </div>
+            </div>
+
+            <div className="bg-white p-8 md:p-10 rounded-[2rem] border border-stone-200 shadow-sm space-y-6">
+              <h3 className="text-xl font-bold serif border-b pb-4">Key Metrics (Bottom Stats)</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {siteContent.certs.stats.map((s, i) => (
+                  <div key={i} className="p-4 bg-stone-50 rounded-xl space-y-4 border border-stone-100 relative group">
+                    <button onClick={() => removeCertStat(i)} className="absolute top-2 right-2 text-red-400 text-[8px] font-bold uppercase opacity-0 group-hover:opacity-100 transition-opacity">Remove</button>
+                    <Field label="Stat Value" value={s.value} onChange={v => updateCertStat(i, 'value', v)} />
+                    <Field label="Label (EN)" value={s.labelEn} onChange={v => updateCertStat(i, 'labelEn', v)} />
+                    <Field label="Label (ID)" value={s.labelId} onChange={v => updateCertStat(i, 'labelId', v)} />
+                  </div>
+                ))}
+              </div>
+              <button onClick={addCertStat} className="w-full py-4 border-2 border-dashed rounded-xl text-stone-300 font-bold uppercase text-[10px] hover:border-gold-accent hover:text-gold-accent">+ Add Metric</button>
+            </div>
+
+            <div className="space-y-8">
+              <h3 className="text-xl font-bold serif">Document Items</h3>
+              {siteContent.certs.items.map((item, i) => (
+                <div key={i} className="p-8 bg-white rounded-[2rem] border border-stone-200 shadow-sm relative group">
+                  <button onClick={() => removeCert(i)} className="absolute top-4 right-6 text-red-400 font-bold text-[9px] uppercase">Delete</button>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Field label="Doc ID" value={item.idNum} onChange={v => updateNestedContent('certs', i, 'idNum', v)} />
+                    <Field label="Doc Title (EN)" value={item.titleEn} onChange={v => updateNestedContent('certs', i, 'titleEn', v)} />
+                    <div className="md:col-span-2 space-y-2">
+                       <Field label="Image URL" value={item.image} onChange={v => updateNestedContent('certs', i, 'image', v)} />
+                       <input type="file" onChange={e => handleImageUpload(e, url => updateNestedContent('certs', i, 'image', url))} className="text-xs" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <button onClick={addCert} className="w-full py-6 border-2 border-dashed rounded-2xl text-stone-300 font-bold uppercase text-[10px] hover:border-gold-accent hover:text-gold-accent">+ Add Document</button>
+            </div>
+
+            <div className="bg-white p-8 rounded-[2rem] border border-stone-200 shadow-sm">
+               <h3 className="text-lg font-bold serif mb-4">Compliance Label (Footer)</h3>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <Field label="Compliance Text (EN)" value={siteContent.certs.footerTextEn} onChange={v => updateContent('certs', 'footerTextEn', v)} />
+                 <Field label="Compliance Text (ID)" value={siteContent.certs.footerTextId} onChange={v => updateContent('certs', 'footerTextId', v)} />
+               </div>
+            </div>
+          </div>
+        )}
+
         {activeTab === 'product' && (
           <div className="animate-fade-in max-w-4xl space-y-10 md:space-y-12">
              <SectionHeader title="Product & Pricing" desc="Packaging variants and marketplace links." />
@@ -246,7 +352,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
               <SectionHeader title="Blog Journal" desc="Educational content management." />
               {blogPosts.map(p => (
                 <div key={p.id} className="p-6 bg-white border border-stone-200 rounded-2xl flex justify-between items-center group">
-                   <p className="font-bold text-shilajit-brown text-sm">{p.title.en}</p>
+                   <p className="font-bold text-shilajit-brown text-sm">{p.title[language]}</p>
                    <button onClick={() => setBlogPosts(prev => prev.filter(bp => bp.id !== p.id))} className="text-red-400 font-bold uppercase text-[9px]">Delete</button>
                 </div>
               ))}
