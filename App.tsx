@@ -4,7 +4,6 @@ import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Benefits from './components/Benefits';
-import AIAssistant from './components/AIAssistant';
 import ProductFeature from './components/ProductFeature';
 import Footer from './components/Footer';
 import CertificatesPage from './components/CertificatesPage';
@@ -189,7 +188,6 @@ const AppContent: React.FC = () => {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // Robust deep merging
         return {
           ...DEFAULT_CONTENT,
           ...parsed,
@@ -292,25 +290,6 @@ const AppContent: React.FC = () => {
             </div>
           </section>
 
-          <AIAssistant 
-            content={{
-              titleEn: "Wellness Concierge",
-              titleId: "Asisten Kebugaran",
-              descEn: "Harnessing the power of advanced AI to answer your questions about Himalayan Shilajit and personalized wellness protocols.",
-              descId: "Memanfaatkan kekuatan AI canggih untuk menjawab pertanyaan Anda tentang Himalayan Shilajit dan protokol kesehatan pribadi.",
-              initialEn: "Greetings. I am your Anzil Wellness Expert. How may I assist your health journey today?",
-              initialId: "Halo. Saya Pakar Kebugaran Anzil Anda. Bagaimana saya dapat membantu perjalanan kesehatan Anda hari ini?",
-              placeholderEn: "Ask about dosage, benefits, or purity...",
-              placeholderId: "Tanya tentang dosis, manfaat, atau kemurnian...",
-              expertNameEn: "Anzil AI Expert",
-              expertNameId: "Pakar AI Anzil",
-              statusEn: "Online • Knowledge Base v2.1",
-              statusId: "Online • Basis Pengetahuan v2.1",
-              featuresEn: ["Real-time Analysis", "Scientific Data", "Usage Guidance"],
-              featuresId: ["Analisis Real-time", "Data Ilmiah", "Panduan Penggunaan"]
-            }} 
-          />
-          
           <Benefits content={siteContent.benefits} />
           <ProductFeature content={siteContent.product} />
 
