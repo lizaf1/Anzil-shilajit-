@@ -4,6 +4,7 @@ import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Benefits from './components/Benefits';
+import AIAssistant from './components/AIAssistant';
 import ProductFeature from './components/ProductFeature';
 import Footer from './components/Footer';
 import CertificatesPage from './components/CertificatesPage';
@@ -17,6 +18,7 @@ export interface ProductVariant {
   id: string;
   size: string;
   priceIdr: number;
+  image?: string;
   shopeeLink?: string;
   tiktokLink?: string;
 }
@@ -113,7 +115,7 @@ const DEFAULT_CONTENT: EditableContent = {
     image: "https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?auto=format&fit=crop&q=80&w=1000",
     whatsapp: "6281234567890",
     variants: [
-      { id: '1', size: '15 Grams', priceIdr: 250000, shopeeLink: 'https://shopee.co.id/product/anzil/15g', tiktokLink: 'https://tiktok.com/shop/anzil/15g' },
+      { id: '1', size: '15 Grams', priceIdr: 250000, shopeeLink: 'https://shopee.co.id/product/anzil/15g', tiktokLink: 'https://tiktok.com/shop/anzil/15g', image: "https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?auto=format&fit=crop&q=80&w=1000" },
       { id: '2', size: '30 Grams', priceIdr: 450000, shopeeLink: 'https://shopee.co.id/product/anzil/30g', tiktokLink: 'https://tiktok.com/shop/anzil/30g' },
       { id: '3', size: '50 Grams', priceIdr: 700000, shopeeLink: 'https://shopee.co.id/product/anzil/50g', tiktokLink: 'https://tiktok.com/shop/anzil/50g' },
     ],
@@ -277,12 +279,12 @@ const AppContent: React.FC = () => {
                   </p>
                   <div className="grid grid-cols-2 gap-8 border-t border-stone-100 pt-8">
                     <div>
-                      <h4 className="text-2xl font-bold text-shilajit-brown mb-1 serif">{siteContent.intro.statAltitude}</h4>
-                      <p className="text-stone-400 text-[10px] font-bold uppercase tracking-widest">{t.intro.stats.altitude}</p>
+                      <h4 className="text-2xl font-bold text-shilajit-brown mb-1">{siteContent.intro.statAltitude}</h4>
+                      <p className="text-[10px] font-bold uppercase text-stone-400 tracking-widest">{t.intro.stats.altitude}</p>
                     </div>
                     <div>
-                      <h4 className="text-2xl font-bold text-shilajit-brown mb-1 serif">{siteContent.intro.statPotency}</h4>
-                      <p className="text-stone-400 text-[10px] font-bold uppercase tracking-widest">{t.intro.stats.potency}</p>
+                      <h4 className="text-2xl font-bold text-shilajit-brown mb-1">{siteContent.intro.statPotency}</h4>
+                      <p className="text-[10px] font-bold uppercase text-stone-400 tracking-widest">{t.intro.stats.potency}</p>
                     </div>
                   </div>
                 </div>
@@ -290,26 +292,40 @@ const AppContent: React.FC = () => {
             </div>
           </section>
 
+          <AIAssistant 
+            content={{
+              titleEn: "Wellness Concierge",
+              titleId: "Asisten Kebugaran",
+              descEn: "Harnessing the power of advanced AI to answer your questions about Himalayan Shilajit and personalized wellness protocols.",
+              descId: "Memanfaatkan kekuatan AI canggih untuk menjawab pertanyaan Anda tentang Himalayan Shilajit dan protokol kesehatan pribadi.",
+              initialEn: "Greetings. I am your Anzil Wellness Expert. How may I assist your health journey today?",
+              initialId: "Halo. Saya Pakar Kebugaran Anzil Anda. Bagaimana saya dapat membantu perjalanan kesehatan Anda hari ini?",
+              placeholderEn: "Ask about dosage, benefits, or purity...",
+              placeholderId: "Tanya tentang dosis, manfaat, atau kemurnian...",
+              expertNameEn: "Anzil AI Expert",
+              expertNameId: "Pakar AI Anzil",
+              statusEn: "Online • Knowledge Base v2.1",
+              statusId: "Online • Basis Pengetahuan v2.1",
+              featuresEn: ["Real-time Analysis", "Scientific Data", "Usage Guidance"],
+              featuresId: ["Analisis Real-time", "Data Ilmiah", "Panduan Penggunaan"]
+            }} 
+          />
+          
           <Benefits content={siteContent.benefits} />
           <ProductFeature content={siteContent.product} />
-          
-          <section id="faq" className="py-24 bg-white">
+
+          <section className="py-24 bg-stone-50" id="faq">
             <div className="container mx-auto px-6">
-              <h2 className="text-4xl font-bold text-center text-shilajit-brown mb-16 serif">
-                {language === 'en' ? siteContent.faq.titleEn : siteContent.faq.titleId}
-              </h2>
-              <div className="max-w-3xl mx-auto space-y-4">
-                {siteContent.faq.items.map((faq, i) => (
-                  <details key={i} className="group p-6 rounded-2xl border border-stone-100 hover:border-stone-200 transition-all">
-                    <summary className="list-none flex justify-between items-center cursor-pointer font-bold text-lg text-shilajit-brown serif">
-                      {language === 'en' ? faq.qEn : faq.qId}
-                      <span className="text-gold-accent group-open:rotate-45 transition-transform duration-300 text-2xl">+</span>
-                    </summary>
-                    <p className="mt-4 text-stone-500 leading-relaxed text-sm">
-                      {language === 'en' ? faq.aEn : faq.aId}
-                    </p>
-                  </details>
-                ))}
+              <div className="max-w-3xl mx-auto">
+                <h2 className="text-4xl font-bold text-shilajit-brown mb-12 text-center serif">{language === 'en' ? siteContent.faq.titleEn : siteContent.faq.titleId}</h2>
+                <div className="space-y-6">
+                  {siteContent.faq.items.map((item, i) => (
+                    <div key={i} className="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm">
+                      <h4 className="text-lg font-bold text-shilajit-brown mb-3 serif">{language === 'en' ? item.qEn : item.qId}</h4>
+                      <p className="text-stone-600 text-sm leading-relaxed">{language === 'en' ? item.aEn : item.aId}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </section>
@@ -319,9 +335,9 @@ const AppContent: React.FC = () => {
       {currentPage === 'certificates' && (
         <CertificatesPage onBack={() => navigateTo('home')} content={siteContent.certs} />
       )}
-
+      
       {currentPage === 'blog' && (
-        <BlogPage onPostSelect={(id) => { setSelectedPostId(id); setCurrentPage('blog-post'); }} posts={blogPosts} />
+        <BlogPage onPostSelect={(id) => { setSelectedPostId(id); navigateTo('blog-post'); }} posts={blogPosts} />
       )}
 
       {currentPage === 'blog-post' && selectedPost && (
@@ -333,10 +349,12 @@ const AppContent: React.FC = () => {
   );
 };
 
-const App: React.FC = () => (
-  <LanguageProvider>
-    <AppContent />
-  </LanguageProvider>
-);
+const App: React.FC = () => {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
+  );
+};
 
 export default App;

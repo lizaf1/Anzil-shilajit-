@@ -17,7 +17,7 @@ interface ProductFeatureProps {
 
 const ProductFeature: React.FC<ProductFeatureProps> = ({ content }) => {
   const { language, t } = useLanguage();
-  // Ensure we have a fallback if variants are empty
+  // State for tracking which variant's price and links to show
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(
     content.variants?.[0] || { id: '0', size: 'N/A', priceIdr: 0, shopeeLink: '', tiktokLink: '' }
   );
@@ -33,6 +33,9 @@ const ProductFeature: React.FC<ProductFeatureProps> = ({ content }) => {
   const shopeeTarget = selectedVariant.shopeeLink || '#';
   const tiktokTarget = selectedVariant.tiktokLink || '#';
 
+  // Use the variant's image if it exists, otherwise use the master section image
+  const displayImage = selectedVariant.image || content.image;
+
   return (
     <section id="shop" className="py-16 md:py-24 bg-stone-50">
       <div className="container mx-auto px-4 md:px-6">
@@ -41,7 +44,8 @@ const ProductFeature: React.FC<ProductFeatureProps> = ({ content }) => {
           {/* Image Side */}
           <div className="lg:w-1/2 relative min-h-[350px] md:min-h-[500px] bg-stone-100 overflow-hidden">
             <img 
-              src={content.image} 
+              key={displayImage} // Force re-render/animation when image changes
+              src={displayImage} 
               alt="Anzil Shilajit Premium Packaging" 
               className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 hover:scale-105"
             />
@@ -80,7 +84,7 @@ const ProductFeature: React.FC<ProductFeatureProps> = ({ content }) => {
               </div>
             </div>
 
-            {/* Variant Selector: Mobile Responsive Grid */}
+            {/* Variant Selector */}
             <div className="mb-8 md:mb-10 space-y-3">
               <label className="text-[9px] font-bold text-stone-400 uppercase tracking-widest block">Select Packaging Size</label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">

@@ -330,19 +330,48 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
         {activeTab === 'product' && (
           <div className="animate-fade-in max-w-4xl space-y-10 md:space-y-12">
              <SectionHeader title="Product & Pricing" desc="Packaging variants and marketplace links." />
+             
+             <div className="bg-white p-8 md:p-10 rounded-[2rem] border border-stone-200 shadow-sm space-y-6">
+               <h3 className="text-xl font-bold serif border-b pb-4">Product Presentation</h3>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <Field label="WhatsApp Number (e.g. 628...)" value={siteContent.product.whatsapp} onChange={val => updateContent('product', 'whatsapp', val)} />
+                 <div className="md:col-span-2 space-y-4">
+                   <Field label="Main Product Image URL" value={siteContent.product.image} onChange={val => updateContent('product', 'image', val)} />
+                   <div className="flex items-center space-x-6">
+                      <input type="file" onChange={e => handleImageUpload(e, url => updateContent('product', 'image', url))} className="text-xs" />
+                      {siteContent.product.image && (
+                        <img src={siteContent.product.image} className="h-20 w-20 object-cover rounded-xl border border-stone-200 shadow-sm" alt="Product Preview" />
+                      )}
+                   </div>
+                 </div>
+               </div>
+             </div>
+
              <div className="space-y-6 md:space-y-8">
+                <h3 className="text-xl font-bold serif px-2">Pricing Variants</h3>
                 {siteContent.product.variants.map((v, i) => (
                   <div key={v.id} className="p-6 md:p-8 bg-white rounded-[2rem] border border-stone-200 shadow-sm relative group">
-                    <button onClick={() => removeVariant(v.id)} className="absolute top-4 right-6 text-red-400 font-bold text-[9px] uppercase">Delete</button>
+                    <button onClick={() => removeVariant(v.id)} className="absolute top-4 right-6 text-red-400 font-bold text-[9px] uppercase">Delete Variant</button>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                        <Field label="Size Label" value={v.size} onChange={val => updateVariant(i, 'size', val)} />
                        <Field label="Price (IDR)" value={v.priceIdr} onChange={val => updateVariant(i, 'priceIdr', val)} type="number" />
                        <Field label="Shopee URL" value={v.shopeeLink || ''} onChange={val => updateVariant(i, 'shopeeLink', val)} />
                        <Field label="TikTok URL" value={v.tiktokLink || ''} onChange={val => updateVariant(i, 'tiktokLink', val)} />
+                       
+                       {/* NEW: Variant-specific image field */}
+                       <div className="md:col-span-2 space-y-2">
+                         <Field label="Variant Image URL" value={v.image || ''} onChange={val => updateVariant(i, 'image', val)} />
+                         <div className="flex items-center space-x-4">
+                            <input type="file" onChange={e => handleImageUpload(e, url => updateVariant(i, 'image', url))} className="text-xs" />
+                            {v.image && (
+                              <img src={v.image} className="h-12 w-12 object-cover rounded-lg border border-stone-200" alt="Variant Preview" />
+                            )}
+                         </div>
+                       </div>
                     </div>
                   </div>
                 ))}
-                <button onClick={addVariant} className="w-full py-6 border-2 border-dashed rounded-2xl text-stone-300 font-bold uppercase tracking-widest hover:border-gold-accent hover:text-gold-accent transition-all">+ Add Variant</button>
+                <button onClick={addVariant} className="w-full py-6 border-2 border-dashed rounded-2xl text-stone-300 font-bold uppercase tracking-widest hover:border-gold-accent hover:text-gold-accent transition-all">+ Add New Size</button>
              </div>
           </div>
         )}
