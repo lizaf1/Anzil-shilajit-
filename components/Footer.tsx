@@ -4,13 +4,25 @@ import { useLanguage } from '../context/LanguageContext';
 
 interface FooterProps {
   onAdminClick?: () => void;
+  onNavigate: (page: 'home' | 'certificates' | 'blog') => void;
+  currentPage: string;
   content: {
     whatsapp: string;
   };
 }
 
-const Footer: React.FC<FooterProps> = ({ onAdminClick, content }) => {
+const Footer: React.FC<FooterProps> = ({ onAdminClick, onNavigate, currentPage, content }) => {
   const { t } = useLanguage();
+
+  const handleHomeAnchor = (e: React.MouseEvent, anchor: string) => {
+    if (currentPage !== 'home') {
+      e.preventDefault();
+      onNavigate('home');
+      setTimeout(() => {
+        window.location.hash = anchor;
+      }, 100);
+    }
+  };
 
   return (
     <footer className="bg-shilajit-brown text-stone-400 py-16">
@@ -28,15 +40,15 @@ const Footer: React.FC<FooterProps> = ({ onAdminClick, content }) => {
           <div>
             <h4 className="text-white font-bold mb-6 uppercase tracking-widest text-sm">Links</h4>
             <ul className="space-y-4 text-sm">
-              <li><a href="#shop" className="hover:text-gold-accent transition-colors">Catalog</a></li>
-              <li><a href="#benefits" className="hover:text-gold-accent transition-colors">Benefits</a></li>
+              <li><a href="#shop" onClick={(e) => handleHomeAnchor(e, 'shop')} className="hover:text-gold-accent transition-colors">Catalog</a></li>
+              <li><a href="#benefits" onClick={(e) => handleHomeAnchor(e, 'benefits')} className="hover:text-gold-accent transition-colors">Benefits</a></li>
             </ul>
           </div>
           <div>
             <h4 className="text-white font-bold mb-6 uppercase tracking-widest text-sm">Explore</h4>
             <ul className="space-y-4 text-sm">
-              <li><a href="#" className="hover:text-gold-accent transition-colors">Lab Results</a></li>
-              <li><a href="#" className="hover:text-gold-accent transition-colors">Our Blog</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); onNavigate('certificates'); }} className="hover:text-gold-accent transition-colors">Lab Results</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); onNavigate('blog'); }} className="hover:text-gold-accent transition-colors">Our Blog</a></li>
             </ul>
           </div>
         </div>

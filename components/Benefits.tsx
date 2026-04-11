@@ -23,27 +23,27 @@ const Benefits: React.FC<BenefitsProps> = ({ content }) => {
   const { language } = useLanguage();
 
   return (
-    <section id="benefits" className="py-24 bg-white overflow-hidden">
-      <div className="container mx-auto px-6">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-shilajit-brown serif">
+    <section id="benefits" className="py-16 md:py-24 bg-white overflow-hidden">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="text-center max-w-2xl mx-auto mb-12 md:mb-16">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 md:mb-6 text-shilajit-brown serif">
             {language === 'en' ? content.titleEn : content.titleId}
           </h2>
-          <p className="text-stone-500 text-lg">
+          <p className="text-stone-500 text-base md:text-lg">
             {language === 'en' ? content.subtitleEn : content.subtitleId}
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
           {content.items.map((benefit, i) => (
-            <div key={i} className="p-8 rounded-3xl border border-stone-100 hover:border-gold-accent transition-all duration-300 group hover:shadow-xl hover:-translate-y-2 bg-stone-50">
-              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-gold-accent mb-6 shadow-sm group-hover:bg-gold-accent group-hover:text-white transition-colors duration-300">
+            <div key={i} className="p-6 md:p-8 rounded-2xl md:rounded-3xl border border-stone-100 hover:border-gold-accent transition-all duration-300 group hover:shadow-xl hover:-translate-y-2 bg-stone-50">
+              <div className="w-14 h-14 md:w-16 md:h-16 bg-white rounded-xl md:rounded-2xl flex items-center justify-center text-gold-accent mb-5 md:mb-6 shadow-sm group-hover:bg-gold-accent group-hover:text-white transition-colors duration-300">
                 {icons[i % icons.length]}
               </div>
-              <h3 className="text-xl font-bold mb-4 text-shilajit-brown serif">
+              <h3 className="text-lg md:text-xl font-bold mb-3 md:mb-4 text-shilajit-brown serif">
                 {language === 'en' ? benefit.titleEn : benefit.titleId}
               </h3>
-              <p className="text-stone-600 leading-relaxed text-sm">
+              <p className="text-stone-600 leading-relaxed text-xs md:text-sm">
                 {language === 'en' ? benefit.descEn : benefit.descId}
               </p>
             </div>

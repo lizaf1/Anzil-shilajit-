@@ -14,9 +14,9 @@ const BlogPage: React.FC<BlogPageProps> = ({ onPostSelect, posts }) => {
   return (
     <div className="min-h-screen bg-stone-50 pt-32 pb-20">
       <div className="container mx-auto px-6">
-        <header className="max-w-3xl mb-16">
-          <h1 className="text-5xl font-bold text-shilajit-brown mb-6 serif">{t.blog.title}</h1>
-          <p className="text-xl text-stone-600 leading-relaxed">
+        <header className="max-w-3xl mb-12 md:mb-16">
+          <h1 className="text-4xl md:text-5xl font-bold text-shilajit-brown mb-4 md:mb-6 serif">{t.blog.title}</h1>
+          <p className="text-lg md:text-xl text-stone-600 leading-relaxed">
             {t.blog.subtitle}
           </p>
         </header>

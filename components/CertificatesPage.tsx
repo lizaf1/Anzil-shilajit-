@@ -51,7 +51,7 @@ const CertificatesPage: React.FC<CertsProps> = ({ onBack, content }) => {
             {content.items.map((cert, i) => (
               <div key={i} className="bg-white rounded-[3rem] p-4 shadow-sm border border-stone-100 hover:shadow-2xl transition-all duration-700 flex flex-col group">
                 <div 
-                  className="relative h-[500px] rounded-[2.5rem] overflow-hidden bg-stone-100 cursor-zoom-in group-hover:bg-white transition-colors"
+                  className="relative h-[350px] md:h-[500px] rounded-[2.5rem] overflow-hidden bg-stone-100 cursor-zoom-in group-hover:bg-white transition-colors"
                   onClick={() => setSelectedImage(cert.image)}
                 >
                   <img 

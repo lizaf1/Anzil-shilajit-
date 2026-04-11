@@ -252,37 +252,37 @@ const AppContent: React.FC = () => {
         <main>
           <Hero content={siteContent.hero} />
           
-          <section className="py-24 bg-white">
-            <div className="container mx-auto px-6">
-              <div className="flex flex-col md:flex-row items-center gap-16">
-                <div className="md:w-1/2">
+          <section className="py-16 md:py-24 bg-white">
+            <div className="container mx-auto px-4 sm:px-6">
+              <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16">
+                <div className="md:w-1/2 w-full">
                   <div className="relative group">
                     <img 
                       src={siteContent.intro.image} 
                       alt="Artisanal Himalayan Sourcing" 
-                      className="rounded-[3rem] shadow-2xl transition-transform duration-700 group-hover:scale-[1.02] w-full aspect-square object-cover"
+                      className="rounded-[2rem] md:rounded-[3rem] shadow-2xl transition-transform duration-700 group-hover:scale-[1.02] w-full aspect-square object-cover"
                     />
                     <div className="absolute -bottom-6 -right-6 bg-gold-accent p-8 rounded-3xl shadow-xl hidden lg:block max-w-xs">
                       <p className="text-white font-bold text-xl serif">"{language === 'en' ? siteContent.intro.quoteEn : siteContent.intro.quoteId}"</p>
                     </div>
                   </div>
                 </div>
-                <div className="md:w-1/2">
-                  <span className="text-gold-accent font-bold uppercase tracking-widest text-xs mb-4 block">{t.intro.tag}</span>
-                  <h2 className="text-4xl md:text-5xl font-bold text-shilajit-brown mb-6 serif">
+                <div className="md:w-1/2 w-full mt-4 md:mt-0">
+                  <span className="text-gold-accent font-bold uppercase tracking-widest text-xs mb-3 md:mb-4 block">{t.intro.tag}</span>
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-shilajit-brown mb-4 md:mb-6 serif">
                     {language === 'en' ? siteContent.intro.titleEn : siteContent.intro.titleId}
                   </h2>
-                  <p className="text-stone-600 text-lg leading-relaxed mb-8">
+                  <p className="text-stone-600 text-base md:text-lg leading-relaxed mb-6 md:mb-8">
                     {language === 'en' ? siteContent.intro.descEn : siteContent.intro.descId}
                   </p>
-                  <div className="grid grid-cols-2 gap-8 border-t border-stone-100 pt-8">
+                  <div className="grid grid-cols-2 gap-6 md:gap-8 border-t border-stone-100 pt-6 md:pt-8">
                     <div>
-                      <h4 className="text-2xl font-bold text-shilajit-brown mb-1">{siteContent.intro.statAltitude}</h4>
-                      <p className="text-[10px] font-bold uppercase text-stone-400 tracking-widest">{t.intro.stats.altitude}</p>
+                      <h4 className="text-xl md:text-2xl font-bold text-shilajit-brown mb-1">{siteContent.intro.statAltitude}</h4>
+                      <p className="text-[9px] md:text-[10px] font-bold uppercase text-stone-400 tracking-widest">{t.intro.stats.altitude}</p>
                     </div>
                     <div>
-                      <h4 className="text-2xl font-bold text-shilajit-brown mb-1">{siteContent.intro.statPotency}</h4>
-                      <p className="text-[10px] font-bold uppercase text-stone-400 tracking-widest">{t.intro.stats.potency}</p>
+                      <h4 className="text-xl md:text-2xl font-bold text-shilajit-brown mb-1">{siteContent.intro.statPotency}</h4>
+                      <p className="text-[9px] md:text-[10px] font-bold uppercase text-stone-400 tracking-widest">{t.intro.stats.potency}</p>
                     </div>
                   </div>
                 </div>
@@ -293,15 +293,15 @@ const AppContent: React.FC = () => {
           <Benefits content={siteContent.benefits} />
           <ProductFeature content={siteContent.product} />
 
-          <section className="py-24 bg-stone-50" id="faq">
-            <div className="container mx-auto px-6">
+          <section className="py-16 md:py-24 bg-stone-50" id="faq">
+            <div className="container mx-auto px-4 sm:px-6">
               <div className="max-w-3xl mx-auto">
-                <h2 className="text-4xl font-bold text-shilajit-brown mb-12 text-center serif">{language === 'en' ? siteContent.faq.titleEn : siteContent.faq.titleId}</h2>
-                <div className="space-y-6">
+                <h2 className="text-3xl sm:text-4xl font-bold text-shilajit-brown mb-8 md:mb-12 text-center serif">{language === 'en' ? siteContent.faq.titleEn : siteContent.faq.titleId}</h2>
+                <div className="space-y-4 md:space-y-6">
                   {siteContent.faq.items.map((item, i) => (
-                    <div key={i} className="bg-white p-8 rounded-3xl border border-stone-200 shadow-sm">
-                      <h4 className="text-lg font-bold text-shilajit-brown mb-3 serif">{language === 'en' ? item.qEn : item.qId}</h4>
-                      <p className="text-stone-600 text-sm leading-relaxed">{language === 'en' ? item.aEn : item.aId}</p>
+                    <div key={i} className="bg-white p-6 md:p-8 rounded-2xl md:rounded-3xl border border-stone-200 shadow-sm">
+                      <h4 className="text-base md:text-lg font-bold text-shilajit-brown mb-2 md:mb-3 serif">{language === 'en' ? item.qEn : item.qId}</h4>
+                      <p className="text-stone-600 text-xs md:text-sm leading-relaxed">{language === 'en' ? item.aEn : item.aId}</p>
                     </div>
                   ))}
                 </div>
@@ -323,7 +323,12 @@ const AppContent: React.FC = () => {
         <BlogPostPage post={selectedPost} onBack={() => navigateTo('blog')} />
       )}
 
-      <Footer content={{ whatsapp: siteContent.product.whatsapp }} onAdminClick={() => navigateTo('admin')} />
+      <Footer 
+        content={{ whatsapp: siteContent.product.whatsapp }} 
+        onAdminClick={() => navigateTo('admin')} 
+        onNavigate={navigateTo}
+        currentPage={currentPage}
+      />
     </div>
   );
 };

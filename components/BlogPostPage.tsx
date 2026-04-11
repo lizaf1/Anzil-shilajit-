@@ -14,29 +14,76 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ post, onBack }) => {
   // Dynamic SEO Meta Tags Update
   useEffect(() => {
     const originalTitle = document.title;
-    const metaDescription = document.querySelector('meta[name="description"]');
-    const originalDescription = metaDescription?.getAttribute('content') || '';
+    
+    // Get existing meta tags or create them if they don't exist
+    const getOrCreateMeta = (name: string, isProperty: boolean = false) => {
+      const selector = isProperty ? `meta[property="${name}"]` : `meta[name="${name}"]`;
+      let meta = document.querySelector(selector);
+      if (!meta) {
+        meta = document.createElement('meta');
+        if (isProperty) {
+          meta.setAttribute('property', name);
+        } else {
+          meta.setAttribute('name', name);
+        }
+        document.head.appendChild(meta);
+      }
+      return meta;
+    };
+
+    const metaDescription = getOrCreateMeta('description');
+    const ogTitle = getOrCreateMeta('og:title', true);
+    const ogDescription = getOrCreateMeta('og:description', true);
+    const ogImage = getOrCreateMeta('og:image', true);
+    const ogUrl = getOrCreateMeta('og:url', true);
+    
+    const twitterTitle = getOrCreateMeta('twitter:title', true);
+    const twitterDescription = getOrCreateMeta('twitter:description', true);
+    const twitterImage = getOrCreateMeta('twitter:image', true);
+
+    // Store original values
+    const originalDescription = metaDescription.getAttribute('content') || '';
+    const originalOgTitle = ogTitle.getAttribute('content') || '';
+    const originalOgDescription = ogDescription.getAttribute('content') || '';
+    const originalOgImage = ogImage.getAttribute('content') || '';
+    const originalOgUrl = ogUrl.getAttribute('content') || '';
+    
+    const originalTwitterTitle = twitterTitle.getAttribute('content') || '';
+    const originalTwitterDescription = twitterDescription.getAttribute('content') || '';
+    const originalTwitterImage = twitterImage.getAttribute('content') || '';
 
     // Set new SEO values based on post and language
-    const pageTitle = `${post.title[language]} | Anzil Himalayan Shilajit`;
+    const brandName = language === 'id' ? 'Anzil Resin Shilajit Himalaya' : 'Anzil Himalayan Shilajit';
+    const pageTitle = `${post.title[language]} | ${brandName}`;
     const pageDescription = post.excerpt[language];
+    const pageImage = post.image;
+    const pageUrl = window.location.href;
 
     document.title = pageTitle;
-    if (metaDescription) {
-      metaDescription.setAttribute('content', pageDescription);
-    } else {
-      const newMeta = document.createElement('meta');
-      newMeta.name = 'description';
-      newMeta.content = pageDescription;
-      document.head.appendChild(newMeta);
-    }
+    metaDescription.setAttribute('content', pageDescription);
+    
+    ogTitle.setAttribute('content', pageTitle);
+    ogDescription.setAttribute('content', pageDescription);
+    ogImage.setAttribute('content', pageImage);
+    ogUrl.setAttribute('content', pageUrl);
+    
+    twitterTitle.setAttribute('content', pageTitle);
+    twitterDescription.setAttribute('content', pageDescription);
+    twitterImage.setAttribute('content', pageImage);
 
     // Cleanup: Restore original tags when leaving the post page
     return () => {
       document.title = originalTitle;
-      if (metaDescription) {
-        metaDescription.setAttribute('content', originalDescription);
-      }
+      metaDescription.setAttribute('content', originalDescription);
+      
+      ogTitle.setAttribute('content', originalOgTitle);
+      ogDescription.setAttribute('content', originalOgDescription);
+      ogImage.setAttribute('content', originalOgImage);
+      ogUrl.setAttribute('content', originalOgUrl);
+      
+      twitterTitle.setAttribute('content', originalTwitterTitle);
+      twitterDescription.setAttribute('content', originalTwitterDescription);
+      twitterImage.setAttribute('content', originalTwitterImage);
     };
   }, [post, language]);
 
@@ -82,14 +129,14 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ post, onBack }) => {
             <span className="text-stone-400">{post.date}</span>
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-bold text-shilajit-brown mb-8 serif leading-tight">
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-shilajit-brown mb-6 md:mb-8 serif leading-tight">
             {post.title[language]}
           </h1>
 
           <img 
             src={post.image} 
             alt={post.title[language]} 
-            className="w-full h-[400px] object-cover rounded-[2rem] shadow-xl mb-12"
+            className="w-full h-[250px] md:h-[400px] object-cover rounded-[1.5rem] md:rounded-[2rem] shadow-xl mb-8 md:mb-12"
           />
 
           <article 
