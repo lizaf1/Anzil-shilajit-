@@ -285,6 +285,14 @@ const AppContent: React.FC = () => {
     return () => clearTimeout(timer);
   }, [siteContent, isInitialLoad]);
 
+  const navigateTo = (page: Page) => {
+    setCurrentPage(page);
+    window.location.hash = page === 'home' ? '' : page;
+    if (page !== 'blog-post') setSelectedPostId(null);
+  };
+
+  const selectedPost = selectedPostId ? blogPosts.find((p: any) => p.id === selectedPostId) : null;
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentPage, selectedPostId]);
@@ -310,6 +318,141 @@ const AppContent: React.FC = () => {
     }
   }, [siteContent.settings.globalLogo]);
 
+  // Dynamic Document SEO & AEO (Artificial Engine Optimization) Engine
+  useEffect(() => {
+    let title = "Anzil | Resin Shilajit Himalaya Premium";
+    let desc = "Rasakan khasiat alam dengan Resin Shilajit Himalaya Anzil. Teruji klinis, kaya akan asam fulvat.";
+    
+    if (currentPage === 'blog') {
+      title = "Anzil Journal | Pengetahuan seputar Shilajit";
+      desc = "Edukasi, sains, dan pengetahuan mendalam seputar Resin Shilajit Himalaya.";
+    } else if (currentPage === 'certificates') {
+      title = "Sertifikasi & Uji Klinis | Anzil Shilajit";
+      desc = "Dokumen resmi standar keamanan global dan kualitas uji lab Anzil Shilajit.";
+    } else if (currentPage === 'blog-post' && selectedPost) {
+      title = `${selectedPost.title[language]} | Anzil Journal`;
+      desc = `${selectedPost.excerpt[language]}`;
+    }
+
+    document.title = title;
+    
+    const metaDesc = document.querySelector("meta[name='description']");
+    if (metaDesc) metaDesc.setAttribute('content', desc);
+
+    const ogTitle = document.querySelector("meta[property='og:title']");
+    if (ogTitle) ogTitle.setAttribute('content', title);
+
+    const ogDesc = document.querySelector("meta[property='og:description']");
+    if (ogDesc) ogDesc.setAttribute('content', desc);
+
+    const twitterTitle = document.querySelector("meta[property='twitter:title']");
+    if (twitterTitle) twitterTitle.setAttribute('content', title);
+
+    const twitterDesc = document.querySelector("meta[property='twitter:description']");
+    if (twitterDesc) twitterDesc.setAttribute('content', desc);
+
+    // --- AEO (Artificial Engine Optimization) JSON-LD SCHEMA INJECTION ---
+    // Remove all old schema tags to prevent duplicates
+    document.querySelectorAll("script[type='application/ld+json']").forEach(el => el.remove());
+
+    const schemas: any[] = [];
+    const siteUrl = window.location.origin;
+
+    // 1. Organization Schema
+    schemas.push({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Anzil",
+      "url": siteUrl,
+      "logo": siteContent.settings.globalLogo || `${siteUrl}/favicon.ico`,
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": `+${siteContent.product.whatsapp}`,
+        "contactType": "customer service"
+      }
+    });
+
+    if (currentPage === 'home') {
+      // 2. Product Schema
+      const offers = siteContent.product.variants.map(v => ({
+        "@type": "Offer",
+        "name": `Anzil Shilajit ${v.size}`,
+        "priceCurrency": "IDR",
+        "price": v.priceIdr,
+        "availability": "https://schema.org/InStock",
+        "url": v.shopeeLink || v.tiktokLink || siteUrl
+      }));
+
+      schemas.push({
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": "Anzil Resin Shilajit Himalaya",
+        "image": siteContent.product.image,
+        "description": desc,
+        "brand": { "@type": "Brand", "name": "Anzil" },
+        "offers": offers.length > 0 ? offers : {
+          "@type": "Offer",
+          "priceCurrency": "IDR",
+          "price": "250000",
+          "availability": "https://schema.org/InStock",
+          "url": siteUrl
+        }
+      });
+
+      // 3. FAQ Schema (Highly critical for Perplexity & Google SGE direct answers)
+      if (siteContent.faq.items.length > 0) {
+        schemas.push({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": siteContent.faq.items.map(faq => ({
+            "@type": "Question",
+            "name": language === 'id' ? faq.qId : faq.qEn,
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": language === 'id' ? faq.aId : faq.aEn
+            }
+          }))
+        });
+      }
+    } else if (currentPage === 'blog-post' && selectedPost) {
+      // 4. Article / BlogPosting Schema (Crucial for AI knowledge extraction)
+      schemas.push({
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": selectedPost.title[language],
+        "image": selectedPost.image,
+        "datePublished": selectedPost.date,
+        "dateModified": selectedPost.date,
+        "author": {
+          "@type": "Organization",
+          "name": "Anzil Editorial"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Anzil",
+          "logo": {
+            "@type": "ImageObject",
+            "url": siteContent.settings.globalLogo || `${siteUrl}/favicon.ico`
+          }
+        },
+        "description": selectedPost.excerpt[language],
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": window.location.href
+        }
+      });
+    }
+
+    // Inject all schemas into the head
+    schemas.forEach(schema => {
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.text = JSON.stringify(schema);
+      document.head.appendChild(script);
+    });
+
+  }, [currentPage, selectedPost, language, siteContent]);
+
   useEffect(() => {
     const handleHashChange = () => {
       if (window.location.hash === '#admin') {
@@ -321,14 +464,6 @@ const AppContent: React.FC = () => {
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
-
-  const navigateTo = (page: Page) => {
-    setCurrentPage(page);
-    window.location.hash = page === 'home' ? '' : page;
-    if (page !== 'blog-post') setSelectedPostId(null);
-  };
-
-  const selectedPost = selectedPostId ? blogPosts.find((p: any) => p.id === selectedPostId) : null;
 
   if (isLoading) {
     return (

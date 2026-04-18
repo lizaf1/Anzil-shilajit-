@@ -50,6 +50,62 @@ app.get("/api/db-test", async (req, res) => {
   }
 });
 
+app.get("/api/robots", (req, res) => {
+  res.setHeader("Content-Type", "text/plain");
+  res.send(`User-agent: *
+Allow: /
+
+Sitemap: https://shilajit.biz.id/sitemap.xml`);
+});
+
+app.get("/api/sitemap", async (req, res) => {
+  res.setHeader("Content-Type", "application/xml");
+  
+  let blogUrls = "";
+  if (db) {
+    try {
+      const result = await db.execute({
+        sql: "SELECT value FROM store WHERE key = 'blogPosts'",
+        args: []
+      });
+      if (result.rows.length > 0) {
+        const posts = JSON.parse(result.rows[0].value as string);
+        if (Array.isArray(posts)) {
+          blogUrls = posts.map(post => `
+  <url>
+    <loc>https://shilajit.biz.id/#blog-post-${post.id}</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>`).join("");
+        }
+      }
+    } catch (e) {
+      console.error("Sitemap generation error:", e);
+    }
+  }
+
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://shilajit.biz.id/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://shilajit.biz.id/#certificates</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://shilajit.biz.id/#blog</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>${blogUrls}
+</urlset>`;
+
+  res.send(sitemap);
+});
+
 app.get("/api/store/:key", async (req, res) => {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   res.setHeader('Pragma', 'no-cache');
