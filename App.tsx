@@ -189,8 +189,8 @@ const AppContent: React.FC = () => {
     async function loadData() {
       try {
         const [contentRes, blogRes] = await Promise.all([
-          fetch('/api/store/siteContent').then(r => r.json()),
-          fetch('/api/store/blogPosts').then(r => r.json())
+          fetch('/api/store/siteContent', { cache: 'no-store' }).then(r => r.json()),
+          fetch('/api/store/blogPosts', { cache: 'no-store' }).then(r => r.json())
         ]);
         
         if (contentRes.data) {

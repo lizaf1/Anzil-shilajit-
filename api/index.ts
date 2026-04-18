@@ -51,6 +51,10 @@ app.get("/api/db-test", async (req, res) => {
 });
 
 app.get("/api/store/:key", async (req, res) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  
   if (!db) return res.status(500).json({ error: "DB not initialized" });
   try {
     const result = await db.execute({
