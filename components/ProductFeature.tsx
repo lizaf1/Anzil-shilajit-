@@ -17,10 +17,13 @@ interface ProductFeatureProps {
 
 const ProductFeature: React.FC<ProductFeatureProps> = ({ content }) => {
   const { language, t } = useLanguage();
-  // State for tracking which variant's price and links to show
-  const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(
-    content.variants?.[0] || { id: '0', size: 'N/A', priceIdr: 0, shopeeLink: '', tiktokLink: '' }
-  );
+  // State for tracking which variant's price and links to show by ID
+  const [selectedVariantId, setSelectedVariantId] = useState<string>('');
+
+  // Always derive the actual selected variant fresh from the props so it captures real-time database updates
+  const selectedVariant = content.variants?.find(v => v.id === selectedVariantId) 
+    || content.variants?.[0] 
+    || { id: '0', size: 'N/A', priceIdr: 0, shopeeLink: '', tiktokLink: '', image: '' };
 
   const formatIdr = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -91,7 +94,7 @@ const ProductFeature: React.FC<ProductFeatureProps> = ({ content }) => {
                 {content.variants.map((v) => (
                   <button 
                     key={v.id}
-                    onClick={() => setSelectedVariant(v)}
+                    onClick={() => setSelectedVariantId(v.id)}
                     className={`px-4 py-3.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border-2 text-center flex items-center justify-center ${
                       selectedVariant.id === v.id 
                         ? 'bg-shilajit-brown border-shilajit-brown text-white shadow-xl scale-[1.02]' 

@@ -93,7 +93,39 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => callback(reader.result as string);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          // Compress the image
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 800; // Aggressive down-scaling to avoid 1MB NGINX payload limit
+          const MAX_HEIGHT = 800;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+
+          // Convert back to Base64 with high compression (0.6 quality = ~60% file size reduction)
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+          callback(dataUrl);
+        };
+        img.src = event.target?.result as string;
+      };
       reader.readAsDataURL(file);
     }
   };
