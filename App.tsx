@@ -243,15 +243,19 @@ const AppContent: React.FC = () => {
   useEffect(() => {
     if (isInitialLoad) return;
     
-    // Also save to localStorage as a fallback
-    localStorage.setItem('anzil_blog_posts', JSON.stringify(blogPosts));
+    // Also save to localStorage as a fallback locally
+    try {
+      localStorage.setItem('anzil_blog_posts', JSON.stringify(blogPosts));
+    } catch (e) {
+      console.warn("Local storage quota exceeded, falling back exclusively to Turso");
+    }
     
     const timer = setTimeout(() => {
       fetch('/api/store/blogPosts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: blogPosts })
-      });
+      }).catch(e => console.error("Database save failed", e));
     }, 1000);
     return () => clearTimeout(timer);
   }, [blogPosts, isInitialLoad]);
@@ -259,15 +263,19 @@ const AppContent: React.FC = () => {
   useEffect(() => {
     if (isInitialLoad) return;
     
-    // Also save to localStorage as a fallback
-    localStorage.setItem('anzil_site_content', JSON.stringify(siteContent));
+    // Also save to localStorage as a fallback locally
+    try {
+      localStorage.setItem('anzil_site_content', JSON.stringify(siteContent));
+    } catch (e) {
+      console.warn("Local storage quota exceeded, falling back exclusively to Turso");
+    }
     
     const timer = setTimeout(() => {
       fetch('/api/store/siteContent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: siteContent })
-      });
+      }).catch(e => console.error("Database save failed", e));
     }, 1000);
     return () => clearTimeout(timer);
   }, [siteContent, isInitialLoad]);
