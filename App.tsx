@@ -175,7 +175,9 @@ type Page = 'home' | 'certificates' | 'blog' | 'blog-post' | 'admin';
 
 const AppContent: React.FC = () => {
   const { language, t } = useLanguage();
-  const [currentPage, setCurrentPage] = useState<Page>('home');
+  const [currentPage, setCurrentPage] = useState<Page>(() => {
+    return window.location.hash === '#admin' ? 'admin' : 'home';
+  });
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
 
@@ -285,8 +287,21 @@ const AppContent: React.FC = () => {
     window.scrollTo(0, 0);
   }, [currentPage, selectedPostId]);
 
+  useEffect(() => {
+    const handleHashChange = () => {
+      if (window.location.hash === '#admin') {
+        setCurrentPage('admin');
+      } else if (window.location.hash === '') {
+        setCurrentPage('home');
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
   const navigateTo = (page: Page) => {
     setCurrentPage(page);
+    window.location.hash = page === 'home' ? '' : page;
     if (page !== 'blog-post') setSelectedPostId(null);
   };
 
