@@ -38,7 +38,61 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  app.use(express.json());
+  // Increase payload limit to handle base64 images
+  app.use(express.json({ limit: "50mb" }));
+  app.use(express.urlencoded({ limit: "50mb", extended: true }));
+
+  // Initialize database tables
+  if (db) {
+    try {
+      await db.execute(`
+        CREATE TABLE IF NOT EXISTS store (
+          key TEXT PRIMARY KEY,
+          value TEXT
+        )
+      `);
+      console.log("Database tables verified.");
+    } catch (e) {
+      console.error("Failed to create tables:", e);
+    }
+  }
+
+  // API route to get stored data
+  app.get("/api/store/:key", async (req, res) => {
+    if (!db) {
+      return res.status(500).json({ error: "Database client is not initialized." });
+    }
+    try {
+      const result = await db.execute({
+        sql: "SELECT value FROM store WHERE key = ?",
+        args: [req.params.key]
+      });
+      if (result.rows.length > 0) {
+        res.json({ data: JSON.parse(result.rows[0].value as string) });
+      } else {
+        res.json({ data: null });
+      }
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  // API route to save stored data
+  app.post("/api/store/:key", async (req, res) => {
+    if (!db) {
+      return res.status(500).json({ error: "Database client is not initialized." });
+    }
+    try {
+      const value = JSON.stringify(req.body.data);
+      await db.execute({
+        sql: "INSERT INTO store (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+        args: [req.params.key, value]
+      });
+      res.json({ status: "ok" });
+    } catch (e: any) {
+      res.status(500).json({ error: e.message });
+    }
+  });
 
   // API route to test Database connection
   app.get("/api/db-test", async (req, res) => {

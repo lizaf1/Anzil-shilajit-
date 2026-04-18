@@ -178,46 +178,99 @@ const AppContent: React.FC = () => {
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
 
-  const [blogPosts, setBlogPosts] = useState(() => {
-    const saved = localStorage.getItem('anzil_blog_posts');
-    return saved ? JSON.parse(saved) : initialBlogPosts;
-  });
+  const [blogPosts, setBlogPosts] = useState<any[]>(initialBlogPosts);
+  const [siteContent, setSiteContent] = useState<EditableContent>(DEFAULT_CONTENT);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-  const [siteContent, setSiteContent] = useState<EditableContent>(() => {
-    const saved = localStorage.getItem('anzil_site_content');
-    if (saved) {
+  // Fetch from Turso database on mount
+  useEffect(() => {
+    async function loadData() {
       try {
-        const parsed = JSON.parse(saved);
-        return {
-          ...DEFAULT_CONTENT,
-          ...parsed,
-          hero: { ...DEFAULT_CONTENT.hero, ...parsed.hero },
-          intro: { ...DEFAULT_CONTENT.intro, ...parsed.intro },
-          product: { ...DEFAULT_CONTENT.product, ...parsed.product },
-          benefits: { ...DEFAULT_CONTENT.benefits, ...parsed.benefits },
-          faq: { ...DEFAULT_CONTENT.faq, ...parsed.faq },
-          certs: { 
-            ...DEFAULT_CONTENT.certs, 
-            ...parsed.certs,
-            stats: parsed.certs?.stats || DEFAULT_CONTENT.certs.stats 
-          },
-          settings: { ...DEFAULT_CONTENT.settings, ...parsed.settings },
-        };
+        const [contentRes, blogRes] = await Promise.all([
+          fetch('/api/store/siteContent').then(r => r.json()),
+          fetch('/api/store/blogPosts').then(r => r.json())
+        ]);
+        
+        if (contentRes.data) {
+          try {
+            const parsed = contentRes.data;
+            setSiteContent({
+              ...DEFAULT_CONTENT,
+              ...parsed,
+              hero: { ...DEFAULT_CONTENT.hero, ...parsed.hero },
+              intro: { ...DEFAULT_CONTENT.intro, ...parsed.intro },
+              product: { ...DEFAULT_CONTENT.product, ...parsed.product },
+              benefits: { ...DEFAULT_CONTENT.benefits, ...parsed.benefits },
+              faq: { ...DEFAULT_CONTENT.faq, ...parsed.faq },
+              certs: { 
+                ...DEFAULT_CONTENT.certs, 
+                ...parsed.certs,
+                stats: parsed.certs?.stats || DEFAULT_CONTENT.certs.stats 
+              },
+              settings: { ...DEFAULT_CONTENT.settings, ...parsed.settings },
+            });
+          } catch (e) {
+            console.error(e);
+          }
+        } else {
+          // Fallback to old localStorage for migration if DB is empty
+          const savedLocal = localStorage.getItem('anzil_site_content');
+          if (savedLocal) {
+            setSiteContent(JSON.parse(savedLocal));
+          }
+        }
+        
+        if (blogRes.data) {
+          setBlogPosts(blogRes.data);
+        } else {
+          const savedLocalB = localStorage.getItem('anzil_blog_posts');
+          if (savedLocalB) {
+            setBlogPosts(JSON.parse(savedLocalB));
+          }
+        }
       } catch (e) {
-        console.error("Failed to parse site content", e);
-        return DEFAULT_CONTENT;
+        console.error("Failed to fetch from DB:", e);
+      } finally {
+        setIsLoading(false);
+        setIsInitialLoad(false);
       }
     }
-    return DEFAULT_CONTENT;
-  });
+    loadData();
+  }, []);
 
+  // Save to Turso database with debounce
   useEffect(() => {
+    if (isInitialLoad) return;
+    
+    // Also save to localStorage as a fallback
     localStorage.setItem('anzil_blog_posts', JSON.stringify(blogPosts));
-  }, [blogPosts]);
+    
+    const timer = setTimeout(() => {
+      fetch('/api/store/blogPosts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: blogPosts })
+      });
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [blogPosts, isInitialLoad]);
 
   useEffect(() => {
+    if (isInitialLoad) return;
+    
+    // Also save to localStorage as a fallback
     localStorage.setItem('anzil_site_content', JSON.stringify(siteContent));
-  }, [siteContent]);
+    
+    const timer = setTimeout(() => {
+      fetch('/api/store/siteContent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: siteContent })
+      });
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [siteContent, isInitialLoad]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -229,6 +282,17 @@ const AppContent: React.FC = () => {
   };
 
   const selectedPost = selectedPostId ? blogPosts.find((p: any) => p.id === selectedPostId) : null;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-stone-50 flex items-center justify-center">
+        <div className="flex flex-col items-center">
+          <div className="w-12 h-12 border-4 border-shilajit-brown/20 border-t-shilajit-brown rounded-full animate-spin mb-4"></div>
+          <p className="text-shilajit-brown font-bold tracking-widest uppercase text-xs">Loading Content...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (currentPage === 'admin') {
     return (
