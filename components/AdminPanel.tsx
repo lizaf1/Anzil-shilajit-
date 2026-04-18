@@ -422,9 +422,21 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
 
         {activeTab === 'settings' && (
            <div className="animate-fade-in max-w-4xl space-y-12">
-              <SectionHeader title="Security" desc="Configure access control." />
-              <div className="bg-white p-8 md:p-10 rounded-[2rem] border border-stone-200 shadow-sm">
+              <SectionHeader title="Security & Global Config" desc="Configure access control and site-wide metadata." />
+              <div className="bg-white p-8 md:p-10 rounded-[2rem] border border-stone-200 shadow-sm space-y-8">
                 <Field label="Admin Password" value={siteContent.settings.adminPassword} onChange={v => updateContent('settings', 'adminPassword', v)} />
+                
+                <div className="border-t pt-8 space-y-4">
+                  <h3 className="text-xl font-bold serif">Global Site Logo</h3>
+                  <p className="text-stone-500 text-xs mt-1">This image powers your Favicon (browser tab icon) and Twitter / iMessage social preview card.</p>
+                  <Field label="Logo Image URL" value={siteContent.settings.globalLogo || ''} onChange={val => updateContent('settings', 'globalLogo', val)} />
+                  <div className="flex items-center space-x-6">
+                    <input type="file" onChange={e => handleImageUpload(e, url => updateContent('settings', 'globalLogo', url))} className="text-xs" />
+                    {siteContent.settings.globalLogo && (
+                      <img src={siteContent.settings.globalLogo} className="h-16 w-16 object-contain rounded-xl border border-stone-200 shadow-sm" alt="Global Logo Preview" />
+                    )}
+                  </div>
+                </div>
               </div>
            </div>
         )}

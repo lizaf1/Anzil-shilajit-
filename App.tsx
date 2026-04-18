@@ -83,6 +83,7 @@ export interface EditableContent {
   };
   settings: {
     adminPassword: string;
+    globalLogo?: string;
   };
 }
 
@@ -167,7 +168,8 @@ const DEFAULT_CONTENT: EditableContent = {
     ]
   },
   settings: {
-    adminPassword: "admin123"
+    adminPassword: "admin123",
+    globalLogo: ""
   }
 };
 
@@ -286,6 +288,27 @@ const AppContent: React.FC = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentPage, selectedPostId]);
+
+  // Sync Global Settings with Document Head
+  useEffect(() => {
+    if (siteContent.settings.globalLogo) {
+      // Favicon
+      let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
+      if (!link) {
+        link = document.createElement('link');
+        link.rel = 'icon';
+        document.head.appendChild(link);
+      }
+      link.href = siteContent.settings.globalLogo;
+
+      // Meta tags (Twitter & OpenGraph)
+      const twitterImg = document.querySelector("meta[property='twitter:image']") as HTMLMetaElement;
+      if (twitterImg) twitterImg.content = siteContent.settings.globalLogo;
+      
+      const ogImg = document.querySelector("meta[property='og:image']") as HTMLMetaElement;
+      if (ogImg) ogImg.content = siteContent.settings.globalLogo;
+    }
+  }, [siteContent.settings.globalLogo]);
 
   useEffect(() => {
     const handleHashChange = () => {
