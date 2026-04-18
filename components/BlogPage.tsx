@@ -23,10 +23,14 @@ const BlogPage: React.FC<BlogPageProps> = ({ onPostSelect, posts }) => {
 
         <div className="grid md:grid-cols-2 gap-12">
           {posts.map((post) => (
-            <article 
+            <a 
+              href={`/blog/${post.slug || post.id}`}
               key={post.id} 
-              className="bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all border border-stone-200 cursor-pointer group flex flex-col h-full"
-              onClick={() => onPostSelect(post.id)}
+              className="bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all border border-stone-200 cursor-pointer group flex flex-col h-full block"
+              onClick={(e) => {
+                e.preventDefault();
+                onPostSelect(post.id);
+              }}
             >
               <div className="relative h-64 overflow-hidden">
                 <img 
@@ -63,7 +67,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ onPostSelect, posts }) => {
                   </svg>
                 </div>
               </div>
-            </article>
+            </a>
           ))}
         </div>
       </div>

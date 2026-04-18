@@ -52,24 +52,26 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage }) => {
             {/* Desktop Links */}
             <div className="hidden md:flex space-x-8 items-center font-medium text-xs uppercase tracking-widest">
               <a 
-                href="#benefits" 
+                href="/#benefits" 
                 onClick={(e) => handleHomeAnchor(e, 'benefits')}
                 className={`${navColorClass} hover:text-gold-accent transition-colors`}
               >
                 {t.nav.benefits}
               </a>
-              <button 
-                onClick={() => onNavigate('blog')}
+              <a 
+                href="/blog"
+                onClick={(e) => { e.preventDefault(); onNavigate('blog'); }}
                 className={`${navColorClass} hover:text-gold-accent transition-colors ${currentPage === 'blog' ? 'text-gold-accent border-b-2 border-gold-accent' : ''}`}
               >
                 {t.nav.blog}
-              </button>
-              <button 
-                onClick={() => onNavigate('certificates')}
+              </a>
+              <a 
+                href="/certificates"
+                onClick={(e) => { e.preventDefault(); onNavigate('certificates'); }}
                 className={`${navColorClass} hover:text-gold-accent transition-colors ${currentPage === 'certificates' ? 'text-gold-accent border-b-2 border-gold-accent' : ''}`}
               >
                 {t.nav.certificates}
-              </button>
+              </a>
             </div>
 
             {/* Persistent Language Switcher */}
@@ -111,10 +113,10 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage }) => {
 
       <div className={`fixed inset-0 z-[45] bg-shilajit-brown transition-transform duration-500 md:hidden ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="flex flex-col items-center justify-center h-full space-y-8 text-center px-6">
-          <button onClick={() => { onNavigate('home'); setIsMobileMenuOpen(false); }} className="text-3xl font-bold text-white serif">{t.nav.home}</button>
-          <button onClick={() => { onNavigate('blog'); setIsMobileMenuOpen(false); }} className={`text-xl font-medium uppercase tracking-widest ${currentPage === 'blog' ? 'text-gold-accent' : 'text-white/70'}`}>{t.nav.blog}</button>
-          <button onClick={() => { onNavigate('certificates'); setIsMobileMenuOpen(false); }} className={`text-xl font-medium uppercase tracking-widest ${currentPage === 'certificates' ? 'text-gold-accent' : 'text-white/70'}`}>{t.nav.certificates}</button>
-          <a href="#shop" onClick={(e) => handleHomeAnchor(e, 'shop')} className="bg-gold-accent text-white w-full py-4 rounded-full text-xl font-bold shadow-xl">{t.nav.shop}</a>
+          <a href="/" onClick={(e) => { e.preventDefault(); onNavigate('home'); setIsMobileMenuOpen(false); }} className="text-3xl font-bold text-white serif">{t.nav.home}</a>
+          <a href="/blog" onClick={(e) => { e.preventDefault(); onNavigate('blog'); setIsMobileMenuOpen(false); }} className={`text-xl font-medium uppercase tracking-widest ${currentPage === 'blog' ? 'text-gold-accent' : 'text-white/70'}`}>{t.nav.blog}</a>
+          <a href="/certificates" onClick={(e) => { e.preventDefault(); onNavigate('certificates'); setIsMobileMenuOpen(false); }} className={`text-xl font-medium uppercase tracking-widest ${currentPage === 'certificates' ? 'text-gold-accent' : 'text-white/70'}`}>{t.nav.certificates}</a>
+          <a href="/#shop" onClick={(e) => handleHomeAnchor(e, 'shop')} className="bg-gold-accent text-white w-full py-4 rounded-full text-xl font-bold shadow-xl">{t.nav.shop}</a>
         </div>
       </div>
     </>

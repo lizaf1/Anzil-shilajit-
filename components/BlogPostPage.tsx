@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { BlogPost } from '../types';
 
@@ -10,82 +10,6 @@ interface BlogPostPageProps {
 
 const BlogPostPage: React.FC<BlogPostPageProps> = ({ post, onBack }) => {
   const { language, t } = useLanguage();
-
-  // Dynamic SEO Meta Tags Update
-  useEffect(() => {
-    const originalTitle = document.title;
-    
-    // Get existing meta tags or create them if they don't exist
-    const getOrCreateMeta = (name: string, isProperty: boolean = false) => {
-      const selector = isProperty ? `meta[property="${name}"]` : `meta[name="${name}"]`;
-      let meta = document.querySelector(selector);
-      if (!meta) {
-        meta = document.createElement('meta');
-        if (isProperty) {
-          meta.setAttribute('property', name);
-        } else {
-          meta.setAttribute('name', name);
-        }
-        document.head.appendChild(meta);
-      }
-      return meta;
-    };
-
-    const metaDescription = getOrCreateMeta('description');
-    const ogTitle = getOrCreateMeta('og:title', true);
-    const ogDescription = getOrCreateMeta('og:description', true);
-    const ogImage = getOrCreateMeta('og:image', true);
-    const ogUrl = getOrCreateMeta('og:url', true);
-    
-    const twitterTitle = getOrCreateMeta('twitter:title', true);
-    const twitterDescription = getOrCreateMeta('twitter:description', true);
-    const twitterImage = getOrCreateMeta('twitter:image', true);
-
-    // Store original values
-    const originalDescription = metaDescription.getAttribute('content') || '';
-    const originalOgTitle = ogTitle.getAttribute('content') || '';
-    const originalOgDescription = ogDescription.getAttribute('content') || '';
-    const originalOgImage = ogImage.getAttribute('content') || '';
-    const originalOgUrl = ogUrl.getAttribute('content') || '';
-    
-    const originalTwitterTitle = twitterTitle.getAttribute('content') || '';
-    const originalTwitterDescription = twitterDescription.getAttribute('content') || '';
-    const originalTwitterImage = twitterImage.getAttribute('content') || '';
-
-    // Set new SEO values based on post and language
-    const brandName = language === 'id' ? 'Anzil Resin Shilajit Himalaya' : 'Anzil Himalayan Shilajit';
-    const pageTitle = `${post.title[language]} | ${brandName}`;
-    const pageDescription = post.excerpt[language];
-    const pageImage = post.image;
-    const pageUrl = window.location.href;
-
-    document.title = pageTitle;
-    metaDescription.setAttribute('content', pageDescription);
-    
-    ogTitle.setAttribute('content', pageTitle);
-    ogDescription.setAttribute('content', pageDescription);
-    ogImage.setAttribute('content', pageImage);
-    ogUrl.setAttribute('content', pageUrl);
-    
-    twitterTitle.setAttribute('content', pageTitle);
-    twitterDescription.setAttribute('content', pageDescription);
-    twitterImage.setAttribute('content', pageImage);
-
-    // Cleanup: Restore original tags when leaving the post page
-    return () => {
-      document.title = originalTitle;
-      metaDescription.setAttribute('content', originalDescription);
-      
-      ogTitle.setAttribute('content', originalOgTitle);
-      ogDescription.setAttribute('content', originalOgDescription);
-      ogImage.setAttribute('content', originalOgImage);
-      ogUrl.setAttribute('content', originalOgUrl);
-      
-      twitterTitle.setAttribute('content', originalTwitterTitle);
-      twitterDescription.setAttribute('content', originalTwitterDescription);
-      twitterImage.setAttribute('content', originalTwitterImage);
-    };
-  }, [post, language]);
 
   const shareUrl = window.location.href;
   const shareTitle = post.title[language];
@@ -113,15 +37,16 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ post, onBack }) => {
     <div className="min-h-screen bg-white pt-32 pb-20">
       <div className="container mx-auto px-6">
         <div className="max-w-3xl mx-auto">
-          <button 
-            onClick={onBack}
-            className="flex items-center space-x-2 text-stone-400 hover:text-shilajit-brown transition-colors mb-12 group"
+          <a 
+            href="/blog"
+            onClick={(e) => { e.preventDefault(); onBack(); }}
+            className="inline-flex items-center space-x-2 text-stone-400 hover:text-shilajit-brown transition-colors mb-12 group"
           >
             <svg className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
             </svg>
             <span className="font-bold text-xs uppercase tracking-widest">{t.blog.backToBlog}</span>
-          </button>
+          </a>
 
           <div className="flex items-center space-x-4 text-xs text-gold-accent font-bold uppercase tracking-widest mb-6">
             <span>{t.blog.categories[post.category as keyof typeof t.blog.categories]}</span>

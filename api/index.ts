@@ -73,7 +73,7 @@ app.get("/api/sitemap", async (req, res) => {
         if (Array.isArray(posts)) {
           blogUrls = posts.map(post => `
   <url>
-    <loc>https://shilajit.biz.id/#blog-post-${post.id}</loc>
+    <loc>https://shilajit.biz.id/blog/${post.slug || post.id}</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>`).join("");
@@ -92,12 +92,12 @@ app.get("/api/sitemap", async (req, res) => {
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://shilajit.biz.id/#certificates</loc>
+    <loc>https://shilajit.biz.id/certificates</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://shilajit.biz.id/#blog</loc>
+    <loc>https://shilajit.biz.id/blog</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>${blogUrls}

@@ -285,9 +285,14 @@ const AppContent: React.FC = () => {
     return () => clearTimeout(timer);
   }, [siteContent, isInitialLoad]);
 
-  const navigateTo = (page: Page) => {
+  const navigateTo = (page: Page, customSlug?: string) => {
     setCurrentPage(page);
-    window.location.hash = page === 'home' ? '' : page;
+    let path = '/';
+    if (page === 'home') path = '/';
+    else if (page === 'blog-post' && customSlug) path = `/blog/${customSlug}`;
+    else path = `/${page}`;
+    
+    window.history.pushState({}, '', path);
     if (page !== 'blog-post') setSelectedPostId(null);
   };
 
@@ -320,36 +325,76 @@ const AppContent: React.FC = () => {
 
   // Dynamic Document SEO & AEO (Artificial Engine Optimization) Engine
   useEffect(() => {
+    // Utility to auto-generate keywords based on text content
+    const generateSmartKeywords = (text: string, lang: 'en' | 'id') => {
+      if (!text) return "";
+      const stopWords = lang === 'id' 
+        ? ['yang', 'di', 'ke', 'dari', 'pada', 'dalam', 'untuk', 'dengan', 'dan', 'atau', 'ini', 'itu', 'adalah', 'sebagai', 'tidak', 'akan', 'bisa', 'kami', 'kita', 'mereka', 'saya', 'anda', 'kamu']
+        : ['the', 'and', 'but', 'or', 'for', 'nor', 'on', 'at', 'to', 'from', 'by', 'with', 'about', 'as', 'into', 'like', 'through', 'after', 'over', 'between', 'out', 'against', 'during', 'before', 'under', 'around', 'among', 'of', 'in', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'this', 'that', 'these', 'those', 'they', 'you', 'we', 'i', 'he', 'she'];
+
+      const cleanText = text.toLowerCase().replace(/<[^>]*>?/gm, ' ').replace(/[^a-z0-9\s]/g, ' ');
+      const words = cleanText.split(/\s+/).filter(w => w.length > 3 && !stopWords.includes(w));
+      
+      const counts: Record<string, number> = {};
+      words.forEach(w => counts[w] = (counts[w] || 0) + 1);
+      
+      const topWords = Object.entries(counts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10)
+        .map(entry => entry[0])
+        .join(', ');
+        
+      return `${topWords}, shilajit, anzil, himalaya, premium, resin organik`;
+    };
+
     let title = "Anzil | Resin Shilajit Himalaya Premium";
     let desc = "Rasakan khasiat alam dengan Resin Shilajit Himalaya Anzil. Teruji klinis, kaya akan asam fulvat.";
+    let keywords = "shilajit, shilajit himalaya, anzil shilajit, asam fulvat, energi alami, mineral, kesehatan, resin organik, jual shilajit asli, shilajit indonesia, stamina pria";
     
     if (currentPage === 'blog') {
       title = "Anzil Journal | Pengetahuan seputar Shilajit";
       desc = "Edukasi, sains, dan pengetahuan mendalam seputar Resin Shilajit Himalaya.";
+      keywords = "jurnal shilajit, blog kesehatan, edukasi shilajit, asam fulvat, shilajit himalaya asli, sains shilajit, anzil blog";
     } else if (currentPage === 'certificates') {
       title = "Sertifikasi & Uji Klinis | Anzil Shilajit";
       desc = "Dokumen resmi standar keamanan global dan kualitas uji lab Anzil Shilajit.";
+      keywords = "sertifikat shilajit, uji lab shilajit, keamanan shilajit, lab test shilajit, shilajit murni, certificates anzil";
     } else if (currentPage === 'blog-post' && selectedPost) {
       title = `${selectedPost.title[language]} | Anzil Journal`;
       desc = `${selectedPost.excerpt[language]}`;
+      keywords = generateSmartKeywords(`${selectedPost.title[language]} ${selectedPost.excerpt[language]} ${selectedPost.content[language]}`, language as 'en'|'id');
     }
 
     document.title = title;
     
-    const metaDesc = document.querySelector("meta[name='description']");
-    if (metaDesc) metaDesc.setAttribute('content', desc);
+    // Ensure meta exact elements exist before updating
+    const getOrCreateMeta = (name: string, isProperty: boolean = false) => {
+      const selector = isProperty ? `meta[property="${name}"]` : `meta[name="${name}"]`;
+      let meta = document.querySelector(selector);
+      if (!meta) {
+        meta = document.createElement('meta');
+        if (isProperty) meta.setAttribute('property', name);
+        else meta.setAttribute('name', name);
+        document.head.appendChild(meta);
+      }
+      return meta;
+    };
 
-    const ogTitle = document.querySelector("meta[property='og:title']");
-    if (ogTitle) ogTitle.setAttribute('content', title);
+    getOrCreateMeta("description").setAttribute("content", desc);
+    getOrCreateMeta("keywords").setAttribute("content", keywords);
+    getOrCreateMeta("og:title", true).setAttribute("content", title);
+    getOrCreateMeta("og:description", true).setAttribute("content", desc);
+    getOrCreateMeta("twitter:title", true).setAttribute("content", title);
+    getOrCreateMeta("twitter:description", true).setAttribute("content", desc);
+    getOrCreateMeta("og:url", true).setAttribute("content", window.location.href);
 
-    const ogDesc = document.querySelector("meta[property='og:description']");
-    if (ogDesc) ogDesc.setAttribute('content', desc);
-
-    const twitterTitle = document.querySelector("meta[property='twitter:title']");
-    if (twitterTitle) twitterTitle.setAttribute('content', title);
-
-    const twitterDesc = document.querySelector("meta[property='twitter:description']");
-    if (twitterDesc) twitterDesc.setAttribute('content', desc);
+    if (currentPage === 'blog-post' && selectedPost) {
+       getOrCreateMeta("og:image", true).setAttribute("content", selectedPost.image);
+       getOrCreateMeta("twitter:image", true).setAttribute("content", selectedPost.image);
+    } else if (siteContent.settings.globalLogo) {
+       getOrCreateMeta("og:image", true).setAttribute("content", siteContent.settings.globalLogo);
+       getOrCreateMeta("twitter:image", true).setAttribute("content", siteContent.settings.globalLogo);
+    }
 
     // --- AEO (Artificial Engine Optimization) JSON-LD SCHEMA INJECTION ---
     // Remove all old schema tags to prevent duplicates
@@ -454,16 +499,35 @@ const AppContent: React.FC = () => {
   }, [currentPage, selectedPost, language, siteContent]);
 
   useEffect(() => {
-    const handleHashChange = () => {
-      if (window.location.hash === '#admin') {
+    const handleLocationChange = () => {
+      const path = window.location.pathname;
+      if (path === '/admin') {
         setCurrentPage('admin');
-      } else if (window.location.hash === '') {
+      } else if (path === '/certificates') {
+        setCurrentPage('certificates');
+      } else if (path === '/blog') {
+        setCurrentPage('blog');
+      } else if (path.startsWith('/blog/')) {
+        const slug = path.replace('/blog/', '');
+        const post = blogPosts.find((p: any) => p.slug === slug || p.id === slug);
+        if (post) {
+            setSelectedPostId(post.id);
+            setCurrentPage('blog-post');
+        } else {
+            setCurrentPage('home');
+        }
+      } else {
         setCurrentPage('home');
       }
     };
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
+
+    if (!isInitialLoad) {
+      handleLocationChange();
+    }
+    
+    window.addEventListener('popstate', handleLocationChange);
+    return () => window.removeEventListener('popstate', handleLocationChange);
+  }, [blogPosts, isInitialLoad]);
 
   if (isLoading) {
     return (
@@ -562,7 +626,11 @@ const AppContent: React.FC = () => {
       )}
       
       {currentPage === 'blog' && (
-        <BlogPage onPostSelect={(id) => { setSelectedPostId(id); navigateTo('blog-post'); }} posts={blogPosts} />
+        <BlogPage onPostSelect={(id) => { 
+          const post = blogPosts.find((p: any) => p.id === id);
+          setSelectedPostId(id); 
+          navigateTo('blog-post', post?.slug); 
+        }} posts={blogPosts} />
       )}
 
       {currentPage === 'blog-post' && selectedPost && (

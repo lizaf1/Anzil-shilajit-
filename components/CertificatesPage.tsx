@@ -27,15 +27,16 @@ const CertificatesPage: React.FC<CertsProps> = ({ onBack, content }) => {
     <div className="min-h-screen bg-stone-50 pt-32 pb-20">
       <div className="container mx-auto px-6">
         <div className="max-w-6xl mx-auto">
-          <button 
-            onClick={onBack}
-            className="flex items-center space-x-2 text-stone-400 hover:text-gold-accent transition-colors mb-12 group"
+          <a 
+            href="/"
+            onClick={(e) => { e.preventDefault(); onBack(); }}
+            className="inline-flex items-center space-x-2 text-stone-400 hover:text-gold-accent transition-colors mb-12 group"
           >
             <svg className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
             </svg>
             <span className="font-bold text-[10px] uppercase tracking-widest">{t.certs.back}</span>
-          </button>
+          </a>
 
           <div className="text-center mb-16">
             <span className="text-gold-accent font-bold uppercase tracking-[0.3em] text-[10px] mb-4 block">Independent Verification</span>

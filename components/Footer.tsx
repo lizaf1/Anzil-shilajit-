@@ -40,15 +40,15 @@ const Footer: React.FC<FooterProps> = ({ onAdminClick, onNavigate, currentPage, 
           <div>
             <h4 className="text-white font-bold mb-6 uppercase tracking-widest text-sm">Links</h4>
             <ul className="space-y-4 text-sm">
-              <li><a href="#shop" onClick={(e) => handleHomeAnchor(e, 'shop')} className="hover:text-gold-accent transition-colors">Catalog</a></li>
-              <li><a href="#benefits" onClick={(e) => handleHomeAnchor(e, 'benefits')} className="hover:text-gold-accent transition-colors">Benefits</a></li>
+              <li><a href="/#shop" onClick={(e) => handleHomeAnchor(e, 'shop')} className="hover:text-gold-accent transition-colors">Catalog</a></li>
+              <li><a href="/#benefits" onClick={(e) => handleHomeAnchor(e, 'benefits')} className="hover:text-gold-accent transition-colors">Benefits</a></li>
             </ul>
           </div>
           <div>
             <h4 className="text-white font-bold mb-6 uppercase tracking-widest text-sm">Explore</h4>
             <ul className="space-y-4 text-sm">
-              <li><a href="#" onClick={(e) => { e.preventDefault(); onNavigate('certificates'); }} className="hover:text-gold-accent transition-colors">Lab Results</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); onNavigate('blog'); }} className="hover:text-gold-accent transition-colors">Our Blog</a></li>
+              <li><a href="/certificates" onClick={(e) => { e.preventDefault(); onNavigate('certificates'); }} className="hover:text-gold-accent transition-colors">Lab Results</a></li>
+              <li><a href="/blog" onClick={(e) => { e.preventDefault(); onNavigate('blog'); }} className="hover:text-gold-accent transition-colors">Our Blog</a></li>
             </ul>
           </div>
         </div>

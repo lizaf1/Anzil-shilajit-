@@ -411,12 +411,26 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
         {activeTab === 'blog' && (
            <div className="animate-fade-in max-w-4xl space-y-6">
               <SectionHeader title="Blog Journal" desc="Educational content management." />
-              {blogPosts.map(p => (
-                <div key={p.id} className="p-6 bg-white border border-stone-200 rounded-2xl flex justify-between items-center group">
-                   <p className="font-bold text-shilajit-brown text-sm">{p.title[language]}</p>
-                   <button onClick={() => setBlogPosts(prev => prev.filter(bp => bp.id !== p.id))} className="text-red-400 font-bold uppercase text-[9px]">Delete</button>
-                </div>
-              ))}
+              <div className="bg-white p-8 rounded-2xl border border-stone-200">
+                <p className="text-sm text-stone-500 mb-6">Manage blog posts. Update the slug to customize the URL (e.g. `apa-itu-shilajit` becomes `shilajit.biz.id/blog/apa-itu-shilajit`). Use hyphens instead of spaces for best SEO.</p>
+                {blogPosts.map((p, idx) => (
+                  <div key={p.id} className="p-6 bg-stone-50 border border-stone-200 rounded-2xl mb-4 space-y-4">
+                     <div className="flex justify-between items-center">
+                       <p className="font-bold text-shilajit-brown text-lg">{p.title['id']} / {p.title['en']}</p>
+                       <button onClick={() => setBlogPosts(prev => prev.filter(bp => bp.id !== p.id))} className="text-red-400 font-bold uppercase text-[9px] hover:text-red-600">Delete</button>
+                     </div>
+                     <Field 
+                       label="URL Slug (SEO Friendly)" 
+                       value={p.slug || p.id} 
+                       onChange={(newSlug) => {
+                         const updated = [...blogPosts];
+                         updated[idx].slug = newSlug.toLowerCase().replace(/[^a-z0-9-]+/g, '-');
+                         setBlogPosts(updated);
+                       }} 
+                     />
+                  </div>
+                ))}
+              </div>
            </div>
         )}
 
