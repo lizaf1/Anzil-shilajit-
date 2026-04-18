@@ -10,6 +10,7 @@ import CertificatesPage from './components/CertificatesPage';
 import BlogPage from './components/BlogPage';
 import BlogPostPage from './components/BlogPostPage';
 import AdminPanel from './components/AdminPanel';
+import FloatingWhatsApp from './components/FloatingWhatsApp';
 import { blogPosts as initialBlogPosts } from './data/blog-posts';
 import { translations } from './translations';
 
@@ -112,7 +113,7 @@ const DEFAULT_CONTENT: EditableContent = {
     descEn: translations.en.product.desc,
     descId: translations.id.product.desc,
     image: "https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?auto=format&fit=crop&q=80&w=1000",
-    whatsapp: "6281234567890",
+    whatsapp: "628883748626",
     variants: [
       { id: '1', size: '15 Grams', priceIdr: 250000, shopeeLink: 'https://shopee.co.id/product/anzil/15g', tiktokLink: 'https://tiktok.com/shop/anzil/15g', image: "https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?auto=format&fit=crop&q=80&w=1000" },
       { id: '2', size: '30 Grams', priceIdr: 450000, shopeeLink: 'https://shopee.co.id/product/anzil/30g', tiktokLink: 'https://tiktok.com/shop/anzil/30g' },
@@ -401,6 +402,7 @@ const AppContent: React.FC = () => {
         onNavigate={navigateTo}
         currentPage={currentPage}
       />
+      <FloatingWhatsApp phoneNumber={siteContent.product.whatsapp || "628883748626"} />
     </div>
   );
 };
