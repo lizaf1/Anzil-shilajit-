@@ -11,6 +11,8 @@ import BlogPage from './components/BlogPage';
 import BlogPostPage from './components/BlogPostPage';
 import AdminPanel from './components/AdminPanel';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
+import ReturnPolicy from './components/ReturnPolicy';
+import ShippingDetails from './components/ShippingDetails';
 import { blogPosts as initialBlogPosts } from './data/blog-posts';
 import { translations } from './translations';
 
@@ -173,7 +175,7 @@ const DEFAULT_CONTENT: EditableContent = {
   }
 };
 
-type Page = 'home' | 'certificates' | 'blog' | 'blog-post' | 'admin';
+type Page = 'home' | 'certificates' | 'blog' | 'blog-post' | 'admin' | 'return-policy' | 'shipping-details';
 
 const AppContent: React.FC = () => {
   const { language, t } = useLanguage();
@@ -507,6 +509,10 @@ const AppContent: React.FC = () => {
         setCurrentPage('certificates');
       } else if (path === '/blog') {
         setCurrentPage('blog');
+      } else if (path === '/return-policy') {
+        setCurrentPage('return-policy');
+      } else if (path === '/shipping-details') {
+        setCurrentPage('shipping-details');
       } else if (path.startsWith('/blog/')) {
         const slug = path.replace('/blog/', '');
         const post = blogPosts.find((p: any) => p.slug === slug || p.id === slug);
@@ -633,6 +639,14 @@ const AppContent: React.FC = () => {
 
           {currentPage === 'blog-post' && selectedPost && (
             <BlogPostPage post={selectedPost} onBack={() => navigateTo('blog')} />
+          )}
+
+          {currentPage === 'return-policy' && (
+            <ReturnPolicy onBack={() => navigateTo('home')} />
+          )}
+
+          {currentPage === 'shipping-details' && (
+            <ShippingDetails onBack={() => navigateTo('home')} />
           )}
 
           <Footer 

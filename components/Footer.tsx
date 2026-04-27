@@ -4,7 +4,7 @@ import { useLanguage } from '../context/LanguageContext';
 
 interface FooterProps {
   onAdminClick?: () => void;
-  onNavigate: (page: 'home' | 'certificates' | 'blog') => void;
+  onNavigate: (page: 'home' | 'certificates' | 'blog' | 'return-policy' | 'shipping-details') => void;
   currentPage: string;
   content: {
     whatsapp: string;
@@ -27,7 +27,7 @@ const Footer: React.FC<FooterProps> = ({ onAdminClick, onNavigate, currentPage, 
   return (
     <footer className="bg-shilajit-brown text-stone-400 py-16">
       <div className="container mx-auto px-6">
-        <div className="grid md:grid-cols-4 gap-12 mb-16">
+        <div className="grid md:grid-cols-5 gap-12 mb-16">
           <div className="col-span-1 md:col-span-2">
             <h2 className="text-white text-3xl font-bold serif mb-6">ANZIL</h2>
             <p className="max-w-md mb-8 leading-relaxed">{t.footer.mission}</p>
@@ -49,6 +49,13 @@ const Footer: React.FC<FooterProps> = ({ onAdminClick, onNavigate, currentPage, 
             <ul className="space-y-4 text-sm">
               <li><a href="/certificates" onClick={(e) => { e.preventDefault(); onNavigate('certificates'); }} className="hover:text-gold-accent transition-colors">Lab Results</a></li>
               <li><a href="/blog" onClick={(e) => { e.preventDefault(); onNavigate('blog'); }} className="hover:text-gold-accent transition-colors">Our Blog</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-white font-bold mb-6 uppercase tracking-widest text-sm">Support</h4>
+            <ul className="space-y-4 text-sm">
+              <li><a href="/return-policy" onClick={(e) => { e.preventDefault(); onNavigate('return-policy'); }} className="hover:text-gold-accent transition-colors">Return Policy</a></li>
+              <li><a href="/shipping-details" onClick={(e) => { e.preventDefault(); onNavigate('shipping-details'); }} className="hover:text-gold-accent transition-colors">Shipping Details</a></li>
             </ul>
           </div>
         </div>
