@@ -39,14 +39,15 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage }) => {
     <>
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${bgColorClass}`}>
         <div className="container mx-auto px-6 flex justify-between items-center">
-          <div 
+          <a 
+            href="/"
             className="flex items-center space-x-2 cursor-pointer z-50"
-            onClick={() => { onNavigate('home'); setIsMobileMenuOpen(false); }}
+            onClick={(e) => { e.preventDefault(); onNavigate('home'); setIsMobileMenuOpen(false); }}
           >
             <span className={`text-xl md:text-2xl font-bold tracking-tighter serif ${isMobileMenuOpen ? 'text-white' : navColorClass}`}>
               ANZIL
             </span>
-          </div>
+          </a>
           
           <div className="flex items-center space-x-2 md:space-x-6">
             {/* Desktop Links */}

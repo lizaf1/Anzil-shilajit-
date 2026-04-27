@@ -155,7 +155,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
               placeholder="Enter Password"
             />
             <button className="w-full bg-shilajit-brown text-white font-bold py-4 rounded-xl hover:bg-gold-accent transition-all shadow-lg">Login</button>
-            <button type="button" onClick={onExit} className="text-stone-300 text-[10px] font-bold uppercase tracking-widest">Return to site</button>
+            <a 
+              href="/" 
+              onClick={(e) => { e.preventDefault(); onExit(); }} 
+              className="text-stone-300 text-[10px] font-bold uppercase tracking-widest text-center block w-full mt-4 hover:text-stone-500 transition-colors"
+            >
+              Return to site
+            </a>
           </form>
         </div>
       </div>
@@ -190,7 +196,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
   return (
     <div className="min-h-screen bg-stone-50 flex flex-col md:flex-row">
       <aside className="w-full md:w-64 bg-shilajit-brown text-white flex flex-col sticky top-0 md:h-screen z-50">
-        <div className="p-8 md:p-10 border-b border-white/5"><h2 className="text-2xl font-bold serif">ANZIL</h2></div>
+        <div className="p-8 md:p-10 border-b border-white/5">
+          <a 
+            href="/" 
+            onClick={(e) => { e.preventDefault(); onExit(); }} 
+            className="text-2xl font-bold serif cursor-pointer hover:text-gold-accent transition-colors"
+          >
+            ANZIL
+          </a>
+        </div>
         <nav className="flex-1 p-4 flex md:flex-col overflow-x-auto md:overflow-y-auto space-x-2 md:space-x-0 md:space-y-1">
           <SidebarLink active={activeTab === 'dashboard'} onClick={() => setActiveTab('dashboard')} icon="📊" label="Overview" />
           <SidebarLink active={activeTab === 'hero'} onClick={() => setActiveTab('hero')} icon="🏔️" label="Hero" />

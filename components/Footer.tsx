@@ -54,7 +54,13 @@ const Footer: React.FC<FooterProps> = ({ onAdminClick, onNavigate, currentPage, 
         </div>
         <div className="pt-12 border-t border-stone-800 flex justify-between items-center text-xs">
           <p>© 2024 Anzil. {t.footer.rights}</p>
-          <button onClick={onAdminClick} className="opacity-10 hover:opacity-100 text-[10px] font-bold">ADMIN</button>
+          <a 
+            href="/admin" 
+            onClick={(e) => { e.preventDefault(); onAdminClick?.(); }} 
+            className="opacity-10 hover:opacity-100 text-[10px] font-bold"
+          >
+            ADMIN
+          </a>
         </div>
       </div>
     </footer>
